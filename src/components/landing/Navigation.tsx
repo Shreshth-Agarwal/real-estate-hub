@@ -2,16 +2,19 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ChevronDown } from "lucide-react";
+import { Menu, X, ChevronDown, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useSession } from "@/lib/auth-client";
+import { useSession, authClient } from "@/lib/auth-client";
+import { toast } from "sonner";
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [knowledgeOpen, setKnowledgeOpen] = useState(false);
-  const { data: session } = useSession();
+  const { data: session, isPending, refetch } = useSession();
+  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -20,6 +23,41 @@ export default function Navigation() {
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  const handleSignOut = async () => {
+    const { error } = await authClient.signOut();
+    if (error?.code) {
+      toast.error("Failed to sign out");
+    } else {
+      localStorage.removeItem("bearer_token");
+      refetch();
+      router.push("/");
+      toast.success("Signed out successfully");
+    }
+  };
+
+  // Get user type from users table (need to fetch from API)
+  const [userType, setUserType] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (session?.user?.id) {
+      // Fetch user type from API
+      fetch(`/api/users?id=${session.user.id}`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("bearer_token")}`,
+        },
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.userType) {
+            setUserType(data.userType);
+          }
+        })
+        .catch(() => {});
+    } else {
+      setUserType(null);
+    }
+  }, [session]);
 
   // Public navigation links (always visible)
   const publicLinks = [
@@ -37,12 +75,14 @@ export default function Navigation() {
   // Protected navigation links (only visible when authenticated)
   const protectedLinks = [
     { href: "/catalogs", label: "Catalogs" },
-    { href: "/providers", label: "Providers" },
-    { href: "/projects", label: "Projects" },
     { href: "/community", label: "Community" },
+    { href: "/projects", label: "Projects" },
   ];
 
-  const navLinks = session?.user ? [...publicLinks.slice(0, 1), ...protectedLinks, ...publicLinks.slice(1)] : publicLinks;
+  // Show protected links only if authenticated
+  const navLinks = session?.user 
+    ? [...publicLinks.slice(0, 1), ...protectedLinks, ...publicLinks.slice(1)] 
+    : publicLinks;
 
   return (
     <motion.nav
@@ -115,12 +155,23 @@ export default function Navigation() {
           <div className="hidden md:flex items-center gap-3">
             {session?.user ? (
               <>
-                <Link href="/dashboard">
-                  <Button variant="ghost">Dashboard</Button>
-                </Link>
-                <Link href="/provider/dashboard">
-                  <Button>Provider Portal</Button>
-                </Link>
+                {/* Role-based dashboard link */}
+                {userType === "provider" ? (
+                  <Link href="/provider/dashboard">
+                    <Button>Provider Dashboard</Button>
+                  </Link>
+                ) : userType === "admin" ? (
+                  <Link href="/admin">
+                    <Button>Admin Panel</Button>
+                  </Link>
+                ) : (
+                  <Link href="/dashboard">
+                    <Button>Dashboard</Button>
+                  </Link>
+                )}
+                <Button variant="ghost" size="icon" onClick={handleSignOut}>
+                  <LogOut className="w-5 h-5" />
+                </Button>
               </>
             ) : (
               <>
@@ -183,16 +234,36 @@ export default function Navigation() {
               <div className="pt-4 border-t border-border space-y-2">
                 {session?.user ? (
                   <>
-                    <Link href="/dashboard" onClick={() => setIsOpen(false)}>
-                      <Button variant="ghost" className="w-full justify-start">
-                        Dashboard
-                      </Button>
-                    </Link>
-                    <Link href="/provider/dashboard" onClick={() => setIsOpen(false)}>
-                      <Button className="w-full justify-start">
-                        Provider Portal
-                      </Button>
-                    </Link>
+                    {userType === "provider" ? (
+                      <Link href="/provider/dashboard" onClick={() => setIsOpen(false)}>
+                        <Button className="w-full justify-start">
+                          Provider Dashboard
+                        </Button>
+                      </Link>
+                    ) : userType === "admin" ? (
+                      <Link href="/admin" onClick={() => setIsOpen(false)}>
+                        <Button className="w-full justify-start">
+                          Admin Panel
+                        </Button>
+                      </Link>
+                    ) : (
+                      <Link href="/dashboard" onClick={() => setIsOpen(false)}>
+                        <Button className="w-full justify-start">
+                          Dashboard
+                        </Button>
+                      </Link>
+                    )}
+                    <Button 
+                      variant="ghost" 
+                      className="w-full justify-start"
+                      onClick={() => {
+                        setIsOpen(false);
+                        handleSignOut();
+                      }}
+                    >
+                      <LogOut className="w-5 h-5 mr-2" />
+                      Sign Out
+                    </Button>
                   </>
                 ) : (
                   <>
