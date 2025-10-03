@@ -3,7 +3,7 @@
 import { useSession } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-import RoleSelection from "@/components/auth/RoleSelection";
+import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
 import { Loader2 } from "lucide-react";
 
 export default function OnboardingPage() {
@@ -28,7 +28,7 @@ export default function OnboardingPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-background via-muted/20 to-background">
-      <RoleSelection 
+      <OnboardingFlow 
         userId={session.user.id} 
         userName={session.user.name || "User"} 
       />

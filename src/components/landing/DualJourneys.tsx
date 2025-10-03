@@ -3,8 +3,29 @@
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Search, Package, CheckCircle, BarChart3, ShoppingCart, Users } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
 
 export default function DualJourneys() {
+  const router = useRouter();
+  const { data: session } = useSession();
+
+  const handleConsumerClick = () => {
+    if (session?.user) {
+      router.push("/dashboard");
+    } else {
+      router.push("/sign-up?role=consumer");
+    }
+  };
+
+  const handleProviderClick = () => {
+    if (session?.user) {
+      router.push("/provider/dashboard");
+    } else {
+      router.push("/sign-up?role=provider");
+    }
+  };
+
   const journeys = [
     {
       type: "Consumer",
@@ -20,6 +41,7 @@ export default function DualJourneys() {
         { icon: Users, text: "Collaborate in project workspace" },
       ],
       cta: "Start as Consumer",
+      onClick: handleConsumerClick,
     },
     {
       type: "Provider",
@@ -35,6 +57,7 @@ export default function DualJourneys() {
         { icon: Users, text: "Build trust & grow revenue" },
       ],
       cta: "Start as Provider",
+      onClick: handleProviderClick,
     },
   ];
 
@@ -100,6 +123,7 @@ export default function DualJourneys() {
 
                 {/* CTA */}
                 <Button
+                  onClick={journey.onClick}
                   className="w-full group-hover:shadow-lg transition-shadow"
                   size="lg"
                 >

@@ -4,9 +4,13 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { useRef } from "react";
+import { useRouter } from "next/navigation";
+import { useSession } from "@/lib/auth-client";
 
 export default function Hero() {
   const ref = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  const { data: session } = useSession();
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
@@ -15,6 +19,22 @@ export default function Hero() {
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.95]);
   const y = useTransform(scrollYProgress, [0, 1], [0, 200]);
+
+  const handleGetStarted = () => {
+    if (session?.user) {
+      router.push("/dashboard");
+    } else {
+      router.push("/sign-up");
+    }
+  };
+
+  const handleListShop = () => {
+    if (session?.user) {
+      router.push("/provider/dashboard");
+    } else {
+      router.push("/sign-up");
+    }
+  };
 
   const features = [
     "Verified professionals",
@@ -100,6 +120,7 @@ export default function Hero() {
           >
             <Button
               size="lg"
+              onClick={handleGetStarted}
               className="w-full sm:w-auto text-base px-8 py-6 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg hover:shadow-xl transition-all"
             >
               Get Started <ArrowRight className="ml-2 w-5 h-5" />
@@ -107,6 +128,7 @@ export default function Hero() {
             <Button
               size="lg"
               variant="outline"
+              onClick={handleListShop}
               className="w-full sm:w-auto text-base px-8 py-6 border-2 hover:bg-accent"
             >
               List Your Shop
