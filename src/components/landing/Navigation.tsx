@@ -21,8 +21,8 @@ export default function Navigation() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const navLinks = [
-    { href: "/catalogs", label: "Catalogs" },
+  // Public navigation links (always visible)
+  const publicLinks = [
     { 
       href: "/knowledge", 
       label: "Knowledge Hub",
@@ -31,11 +31,18 @@ export default function Navigation() {
         { href: "/knowledge/city-insights", label: "City Insights" },
       ]
     },
+    { href: "/pricing", label: "Pricing" },
+  ];
+
+  // Protected navigation links (only visible when authenticated)
+  const protectedLinks = [
+    { href: "/catalogs", label: "Catalogs" },
     { href: "/providers", label: "Providers" },
     { href: "/projects", label: "Projects" },
     { href: "/community", label: "Community" },
-    { href: "/pricing", label: "Pricing" },
   ];
+
+  const navLinks = session?.user ? [...publicLinks.slice(0, 1), ...protectedLinks, ...publicLinks.slice(1)] : publicLinks;
 
   return (
     <motion.nav
