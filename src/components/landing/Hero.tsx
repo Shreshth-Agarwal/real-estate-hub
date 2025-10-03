@@ -6,6 +6,7 @@ import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { useRef } from "react";
 import { useRouter } from "next/navigation";
 import { useSession } from "@/lib/auth-client";
+import RealEstateAnimation from "./RealEstateAnimation";
 
 export default function Hero() {
   const ref = useRef<HTMLDivElement>(null);
@@ -49,6 +50,7 @@ export default function Hero() {
       {/* Animated Background */}
       <div className="absolute inset-0 -z-10">
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-accent/5" />
+        <RealEstateAnimation />
         <motion.div
           style={{ opacity: useTransform(scrollYProgress, [0, 0.3], [0.1, 0]) }}
           className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.05),transparent_50%)]"
