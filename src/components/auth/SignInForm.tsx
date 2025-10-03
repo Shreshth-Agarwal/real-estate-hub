@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,38 +9,54 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Loader2, Mail } from "lucide-react";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
 
 export default function SignInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError("");
 
     try {
-      const { error } = await authClient.signIn.email({
+      const { data, error } = await authClient.signIn.email({
         email,
         password,
         rememberMe,
-        callbackURL: "/onboarding",
       });
 
-      if (error) {
-        setError("Invalid email or password");
+      if (error?.code) {
+        toast.error("Invalid email or password. Please try again.");
         setIsLoading(false);
         return;
       }
 
-      router.push("/onboarding");
+      toast.success("Welcome back!");
+      
+      // Redirect to intended page or dashboard
+      const next = searchParams.get("next") || "/dashboard";
+      router.push(next);
+      router.refresh();
     } catch (err) {
-      setError("An error occurred. Please try again.");
+      console.error("Sign in error:", err);
+      toast.error("An error occurred. Please try again.");
       setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: searchParams.get("next") || "/dashboard",
+      });
+    } catch (err) {
+      toast.error("Google sign-in is not configured yet");
     }
   };
 
@@ -49,7 +65,7 @@ export default function SignInForm() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="w-full max-w-md space-y-6"
+      className="w-full max-w-md space-y-6 bg-card border border-border rounded-2xl p-8 shadow-xl"
     >
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Welcome back</h1>
@@ -59,16 +75,6 @@ export default function SignInForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            className="p-3 rounded-lg bg-destructive/10 text-destructive text-sm"
-          >
-            {error}
-          </motion.div>
-        )}
-
         <div className="space-y-2">
           <Label htmlFor="email">Email</Label>
           <Input
@@ -92,32 +98,23 @@ export default function SignInForm() {
             onChange={(e) => setPassword(e.target.value)}
             required
             disabled={isLoading}
+            autoComplete="off"
           />
         </div>
 
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Checkbox
-              id="remember"
-              checked={rememberMe}
-              onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-              disabled={isLoading}
-            />
-            <label
-              htmlFor="remember"
-              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-            >
-              Remember me
-            </label>
-          </div>
-          <Button
-            type="button"
-            variant="link"
-            className="text-sm px-0"
+        <div className="flex items-center space-x-2">
+          <Checkbox
+            id="remember"
+            checked={rememberMe}
+            onCheckedChange={(checked) => setRememberMe(checked as boolean)}
             disabled={isLoading}
+          />
+          <label
+            htmlFor="remember"
+            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
-            Forgot password?
-          </Button>
+            Remember me
+          </label>
         </div>
 
         <Button type="submit" className="w-full" disabled={isLoading}>
@@ -137,7 +134,7 @@ export default function SignInForm() {
           <span className="w-full border-t" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
+          <span className="bg-card px-2 text-muted-foreground">
             Or continue with
           </span>
         </div>
@@ -148,6 +145,7 @@ export default function SignInForm() {
         variant="outline"
         className="w-full"
         disabled={isLoading}
+        onClick={handleGoogleSignIn}
       >
         <Mail className="mr-2 h-4 w-4" />
         Google

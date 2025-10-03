@@ -8,18 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Loader2, Mail } from "lucide-react";
 import { motion } from "framer-motion";
-
-type ErrorTypes = Partial<Record<keyof typeof authClient.$ERROR_CODES, string>>;
-const errorCodes = {
-  USER_ALREADY_EXISTS: "This email is already registered",
-} satisfies ErrorTypes;
-
-const getErrorMessage = (code: string) => {
-  if (code in errorCodes) {
-    return errorCodes[code as keyof typeof errorCodes];
-  }
-  return "Registration failed. Please try again.";
-};
+import { toast } from "sonner";
 
 export default function SignUpForm() {
   const [name, setName] = useState("");
@@ -27,57 +16,74 @@ export default function SignUpForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    setError("");
 
     // Validate passwords match
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      toast.error("Passwords do not match");
       setIsLoading(false);
       return;
     }
 
     // Validate password strength
     if (password.length < 8) {
-      setError("Password must be at least 8 characters");
+      toast.error("Password must be at least 8 characters");
       setIsLoading(false);
       return;
     }
 
     try {
-      const { error: signUpError } = await authClient.signUp.email({
+      const { data, error } = await authClient.signUp.email({
         email,
         name,
         password,
       });
 
-      if (signUpError?.code) {
-        setError(getErrorMessage(signUpError.code));
+      if (error?.code) {
+        if (error.code === "USER_ALREADY_EXISTS") {
+          toast.error("This email is already registered");
+        } else {
+          toast.error("Registration failed. Please try again.");
+        }
         setIsLoading(false);
         return;
       }
+
+      toast.success("Account created successfully!");
 
       // Auto sign in after registration
       const { error: signInError } = await authClient.signIn.email({
         email,
         password,
-        callbackURL: "/onboarding",
       });
 
       if (signInError) {
-        router.push("/sign-in?registered=true");
+        toast.info("Please sign in with your new account");
+        router.push("/sign-in");
         return;
       }
 
       router.push("/onboarding");
+      router.refresh();
     } catch (err) {
-      setError("An error occurred. Please try again.");
+      console.error("Sign up error:", err);
+      toast.error("An error occurred. Please try again.");
       setIsLoading(false);
+    }
+  };
+
+  const handleGoogleSignUp = async () => {
+    try {
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/onboarding",
+      });
+    } catch (err) {
+      toast.error("Google sign-up is not configured yet");
     }
   };
 
@@ -86,7 +92,7 @@ export default function SignUpForm() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="w-full max-w-md space-y-6"
+      className="w-full max-w-md space-y-6 bg-card border border-border rounded-2xl p-8 shadow-xl"
     >
       <div className="text-center space-y-2">
         <h1 className="text-3xl font-bold tracking-tight">Create an account</h1>
@@ -96,16 +102,6 @@ export default function SignUpForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
-        {error && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            className="p-3 rounded-lg bg-destructive/10 text-destructive text-sm"
-          >
-            {error}
-          </motion.div>
-        )}
-
         <div className="space-y-2">
           <Label htmlFor="name">Full Name</Label>
           <Input
@@ -142,6 +138,7 @@ export default function SignUpForm() {
             onChange={(e) => setPassword(e.target.value)}
             required
             disabled={isLoading}
+            autoComplete="off"
           />
           <p className="text-xs text-muted-foreground">
             Must be at least 8 characters
@@ -158,6 +155,7 @@ export default function SignUpForm() {
             onChange={(e) => setConfirmPassword(e.target.value)}
             required
             disabled={isLoading}
+            autoComplete="off"
           />
         </div>
 
@@ -178,7 +176,7 @@ export default function SignUpForm() {
           <span className="w-full border-t" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-background px-2 text-muted-foreground">
+          <span className="bg-card px-2 text-muted-foreground">
             Or continue with
           </span>
         </div>
@@ -189,6 +187,7 @@ export default function SignUpForm() {
         variant="outline"
         className="w-full"
         disabled={isLoading}
+        onClick={handleGoogleSignUp}
       >
         <Mail className="mr-2 h-4 w-4" />
         Google
@@ -203,17 +202,6 @@ export default function SignUpForm() {
           onClick={() => router.push("/sign-in")}
         >
           Sign in
-        </Button>
-      </p>
-
-      <p className="text-center text-xs text-muted-foreground px-8">
-        By creating an account, you agree to our{" "}
-        <Button type="button" variant="link" className="px-0 text-xs h-auto">
-          Terms of Service
-        </Button>{" "}
-        and{" "}
-        <Button type="button" variant="link" className="px-0 text-xs h-auto">
-          Privacy Policy
         </Button>
       </p>
     </motion.div>
