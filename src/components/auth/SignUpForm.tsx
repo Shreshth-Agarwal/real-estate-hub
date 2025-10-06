@@ -1,14 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Mail } from "lucide-react";
+import { Loader2, Mail, AlertCircle } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function SignUpForm() {
   const [name, setName] = useState("");
@@ -16,11 +17,20 @@ export default function SignUpForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const oauthError = searchParams?.get("error");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+
+    console.log("📝 [SIGN-UP] Email sign-up initiated:", {
+      email,
+      name,
+      timestamp: new Date().toISOString(),
+    });
 
     // Validate passwords match
     if (password !== confirmPassword) {
@@ -44,6 +54,12 @@ export default function SignUpForm() {
       });
 
       if (error?.code) {
+        console.error("❌ [SIGN-UP ERROR]:", {
+          errorCode: error.code,
+          message: error.message,
+          timestamp: new Date().toISOString(),
+        });
+
         if (error.code === "USER_ALREADY_EXISTS") {
           toast.error("This email is already registered");
         } else {
@@ -52,6 +68,12 @@ export default function SignUpForm() {
         setIsLoading(false);
         return;
       }
+
+      console.log("✅ [SIGN-UP SUCCESS] Account created:", {
+        userId: data?.user?.id,
+        email: data?.user?.email,
+        timestamp: new Date().toISOString(),
+      });
 
       toast.success("Account created successfully!");
 
@@ -62,28 +84,52 @@ export default function SignUpForm() {
       });
 
       if (signInError) {
+        console.error("❌ [AUTO SIGN-IN ERROR]:", {
+          error: signInError,
+          timestamp: new Date().toISOString(),
+        });
         toast.info("Please sign in with your new account");
         router.push("/sign-in");
         return;
       }
 
+      console.log("🎯 [REDIRECT] Redirecting to onboarding");
       router.push("/onboarding");
       router.refresh();
     } catch (err) {
-      console.error("Sign up error:", err);
+      console.error("❌ [SIGN-UP ERROR] Unexpected error:", {
+        error: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+        timestamp: new Date().toISOString(),
+      });
       toast.error("An error occurred. Please try again.");
       setIsLoading(false);
     }
   };
 
   const handleGoogleSignUp = async () => {
+    setIsGoogleLoading(true);
+    
+    console.log("🔐 [GOOGLE OAUTH] Initiating Google sign-up:", {
+      timestamp: new Date().toISOString(),
+      redirectURL: "/onboarding",
+    });
+
     try {
       await authClient.signIn.social({
         provider: "google",
         callbackURL: "/onboarding",
       });
+      
+      console.log("🔄 [GOOGLE OAUTH] Redirecting to Google consent screen");
     } catch (err) {
-      toast.error("Google sign-up is not configured yet");
+      console.error("❌ [GOOGLE OAUTH ERROR]:", {
+        error: err instanceof Error ? err.message : String(err),
+        stack: err instanceof Error ? err.stack : undefined,
+        timestamp: new Date().toISOString(),
+      });
+      toast.error("Google sign-up failed. Please try again.");
+      setIsGoogleLoading(false);
     }
   };
 
@@ -100,6 +146,18 @@ export default function SignUpForm() {
           Join Hub4Estate and transform your real-estate journey
         </p>
       </div>
+
+      {oauthError && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            {oauthError === "no_code" && "OAuth authorization failed. Please try again."}
+            {oauthError === "session_failed" && "Failed to create session. Please try again."}
+            {oauthError === "oauth_failed" && "OAuth authentication failed. Please try again."}
+            {!["no_code", "session_failed", "oauth_failed"].includes(oauthError) && oauthError}
+          </AlertDescription>
+        </Alert>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="space-y-2">
@@ -159,7 +217,7 @@ export default function SignUpForm() {
           />
         </div>
 
-        <Button type="submit" className="w-full" disabled={isLoading}>
+        <Button type="submit" className="w-full" disabled={isLoading || isGoogleLoading}>
           {isLoading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -186,11 +244,20 @@ export default function SignUpForm() {
         type="button"
         variant="outline"
         className="w-full"
-        disabled={isLoading}
+        disabled={isLoading || isGoogleLoading}
         onClick={handleGoogleSignUp}
       >
-        <Mail className="mr-2 h-4 w-4" />
-        Google
+        {isGoogleLoading ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Connecting to Google...
+          </>
+        ) : (
+          <>
+            <Mail className="mr-2 h-4 w-4" />
+            Google
+          </>
+        )}
       </Button>
 
       <p className="text-center text-sm text-muted-foreground">
@@ -200,6 +267,7 @@ export default function SignUpForm() {
           variant="link"
           className="px-0"
           onClick={() => router.push("/sign-in")}
+          disabled={isLoading || isGoogleLoading}
         >
           Sign in
         </Button>
