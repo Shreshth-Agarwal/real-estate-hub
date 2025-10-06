@@ -15,6 +15,13 @@
       "when": 1759483476764,
       "tag": "0001_clear_crystal",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1759780315141,
+      "tag": "0002_quick_wilson_fisk",
+      "breakpoints": true
     }
   ]
 }

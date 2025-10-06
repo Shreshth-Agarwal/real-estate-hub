@@ -142,6 +142,118 @@ export const verificationDocs = sqliteTable('verification_docs', {
   createdAt: text('created_at').notNull(),
 });
 
+// Blog posts table
+export const blogPosts = sqliteTable('blog_posts', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  authorId: integer('author_id').references(() => users.id).notNull(),
+  title: text('title').notNull(),
+  slug: text('slug').notNull().unique(),
+  excerpt: text('excerpt').notNull(),
+  bodyMd: text('body_md').notNull(),
+  tags: text('tags', { mode: 'json' }), // JSON array
+  heroUrl: text('hero_url'),
+  status: text('status').notNull().default('draft'), // 'draft', 'review', 'published'
+  publishedAt: text('published_at'),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
+
+// City knowledge table
+export const cityKnowledge = sqliteTable('city_knowledge', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  regionCode: text('region_code').notNull().unique(),
+  summaryMd: text('summary_md').notNull(),
+  govContacts: text('gov_contacts', { mode: 'json' }),
+  planningDocs: text('planning_docs', { mode: 'json' }), // JSON array
+  utilitySteps: text('utility_steps', { mode: 'json' }),
+  lastRefreshed: text('last_refreshed').notNull(),
+});
+
+// Social posts table
+export const socialPosts = sqliteTable('social_posts', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  authorId: integer('author_id').references(() => users.id).notNull(),
+  content: text('content').notNull(),
+  mediaUrls: text('media_urls', { mode: 'json' }), // JSON array
+  likesCount: integer('likes_count').notNull().default(0),
+  commentsCount: integer('comments_count').notNull().default(0),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
+
+// Social comments table
+export const socialComments = sqliteTable('social_comments', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  postId: integer('post_id').references(() => socialPosts.id).notNull(),
+  authorId: integer('author_id').references(() => users.id).notNull(),
+  content: text('content').notNull(),
+  createdAt: text('created_at').notNull(),
+});
+
+// Social groups table
+export const socialGroups = sqliteTable('social_groups', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  name: text('name').notNull(),
+  description: text('description'),
+  visibility: text('visibility').notNull().default('public'), // 'public', 'private'
+  ownerId: integer('owner_id').references(() => users.id).notNull(),
+  membersCount: integer('members_count').notNull().default(0),
+  createdAt: text('created_at').notNull(),
+});
+
+// Social group members table
+export const socialGroupMembers = sqliteTable('social_group_members', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  groupId: integer('group_id').references(() => socialGroups.id).notNull(),
+  userId: integer('user_id').references(() => users.id).notNull(),
+  role: text('role').notNull().default('member'), // 'member', 'admin'
+  joinedAt: text('joined_at').notNull(),
+});
+
+// Notifications table
+export const notifications = sqliteTable('notifications', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  userId: integer('user_id').references(() => users.id).notNull(),
+  type: text('type').notNull(),
+  title: text('title').notNull(),
+  message: text('message').notNull(),
+  link: text('link'),
+  read: integer('read', { mode: 'boolean' }).notNull().default(false),
+  createdAt: text('created_at').notNull(),
+});
+
+// Project tasks table
+export const projectTasks = sqliteTable('project_tasks', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  projectId: integer('project_id').references(() => projects.id).notNull(),
+  title: text('title').notNull(),
+  description: text('description'),
+  status: text('status').notNull().default('pending'), // 'pending', 'in_progress', 'completed'
+  assignedTo: integer('assigned_to').references(() => users.id),
+  dueDate: text('due_date'),
+  createdAt: text('created_at').notNull(),
+  updatedAt: text('updated_at').notNull(),
+});
+
+// Project docs table
+export const projectDocs = sqliteTable('project_docs', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  projectId: integer('project_id').references(() => projects.id).notNull(),
+  title: text('title').notNull(),
+  docUrl: text('doc_url').notNull(),
+  uploadedBy: integer('uploaded_by').references(() => users.id).notNull(),
+  createdAt: text('created_at').notNull(),
+});
+
+// Project members table
+export const projectMembers = sqliteTable('project_members', {
+  id: integer('id').primaryKey({ autoIncrement: true }),
+  projectId: integer('project_id').references(() => projects.id).notNull(),
+  userId: integer('user_id').references(() => users.id).notNull(),
+  role: text('role').notNull().default('member'), // 'owner', 'member'
+  joinedAt: text('joined_at').notNull(),
+});
+
 // Indexes for performance optimization
 export const catalogsProviderIdIndex = index('catalogs_provider_id_idx').on(catalogs.providerId);
 export const catalogsCityPriceIndex = index('catalogs_city_price_idx').on(catalogs.city, catalogs.price);
