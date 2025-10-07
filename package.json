@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack -p 5000 -H 0.0.0.0",
+    "dev": "next dev -p 5000 -H 0.0.0.0",
     "build": "next build",
     "start": "next start -p 5000 -H 0.0.0.0",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
     "@babel/parser": "^7.28.4",
@@ -96,6 +98,7 @@
     "three": "^0.178.0",
     "three-globe": "^2.43.0",
     "vaul": "^1.1.2",
+    "web-streams-polyfill": "^4.2.0",
     "zod": "^4.1.8"
   },
   "devDependencies": {
