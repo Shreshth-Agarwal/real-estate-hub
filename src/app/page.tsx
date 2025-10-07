@@ -1,35 +1,17 @@
-import Navigation from "@/components/landing/Navigation";
-import Hero from "@/components/landing/Hero";
-import ProblemSolution from "@/components/landing/ProblemSolution";
-import DualJourneys from "@/components/landing/DualJourneys";
-import HowItWorks from "@/components/landing/HowItWorks";
-import FeaturesShowcase from "@/components/landing/FeaturesShowcase";
-import CatalogCarousel from "@/components/landing/CatalogCarousel";
-import StatsSection from "@/components/landing/StatsSection";
-import TrustSection from "@/components/landing/TrustSection";
-import PolicyInsights from "@/components/landing/PolicyInsights";
-import CommunityProjects from "@/components/landing/CommunityProjects";
-import Footer from "@/components/landing/Footer";
-import AIAssistant from "@/components/ai/AIAssistant";
-
 export default function Home() {
   return (
-    <div className="min-h-screen">
-      <Navigation />
-      <main>
-        <Hero />
-        <ProblemSolution />
-        <DualJourneys />
-        <HowItWorks />
-        <FeaturesShowcase />
-        <CatalogCarousel />
-        <StatsSection />
-        <TrustSection />
-        <PolicyInsights />
-        <CommunityProjects />
-      </main>
-      <Footer />
-      <AIAssistant defaultMode="general" />
+    <div className="min-h-screen bg-gradient-to-br from-beige-50 to-beige-100 flex items-center justify-center">
+      <div className="text-center p-8">
+        <h1 className="text-6xl font-bold text-black mb-4">
+          Hub4Estate
+        </h1>
+        <p className="text-2xl text-gray-700 mb-8">
+          Real Estate Platform
+        </p>
+        <p className="text-lg text-gray-600">
+          Loading components...
+        </p>
+      </div>
     </div>
   );
 }

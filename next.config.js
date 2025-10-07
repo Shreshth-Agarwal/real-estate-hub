@@ -15,7 +15,6 @@ const nextConfig = {
       },
     ],
   },
-  outputFileTracingRoot: path.resolve(__dirname),
   webpack: (config) => {
     return config;
   }

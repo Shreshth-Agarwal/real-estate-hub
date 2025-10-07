@@ -1,5 +1,9 @@
-import { auth } from "@/lib/auth";
+import { NextRequest, NextResponse } from "next/server";
 
-import { toNextJsHandler } from "better-auth/next-js";
+export async function POST(request: NextRequest) {
+  return NextResponse.json({ error: "Auth not configured" }, { status: 501 });
+}
 
-export const { POST, GET } = toNextJsHandler(auth);
+export async function GET(request: NextRequest) {
+  return NextResponse.json({ error: "Auth not configured" }, { status: 501 });
+}
