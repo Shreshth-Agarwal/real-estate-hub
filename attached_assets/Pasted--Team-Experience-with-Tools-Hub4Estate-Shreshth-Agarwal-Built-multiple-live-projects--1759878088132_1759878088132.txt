@@ -1,0 +1,1109 @@
+# 🧠 Team Experience with Tools (Hub4Estate)
+
+**Shreshth Agarwal:**
+
+* Built multiple live projects using **Orchid**, **Lovable.dev**, **Relevance**, and **n8n** for both hackathons and personal ventures.
+* Experienced with **Supabase**, **Auth integrations**, **OpenAI API**, and automation workflows.
+* Designed complete app journeys—from UI prototypes to database schema—using no-code and low-code tools.
+
+**Prateek [Full Name]:**
+
+* Handles all technical implementation—comfortable with **Lovable.dev**, **Supabase**, and **TypeScript**.
+* Skilled in **auth setup**, **API integration**, and **debugging** within scalable MVP frameworks.
+* Has built prototypes using **Firebase**, **Relevance**, and **AI chatbot APIs**.
+
+**Arihant:**
+
+* Comfortable using **Lovable.dev** for cataloguing and vendor onboarding workflows.
+* Brings offline operations knowledge and applies no-code tools for streamlining supplier data and market onboarding.
+
+---
+
+**Summary:**
+
+All team members are already comfortable and actively using the selected tools—**Orchid, Lovable.dev, Supabase, Relevance, and OpenAI API**—making the product development phase efficient, rapid, and execution-focused. The team combines technical expertise with real-world domain understanding, ensuring the build is both scalable and grounded in actual market needs.
+
+---
+
+# 🔭 Hub4Estate — Concept, Features & End‑to‑End Journeys (Deep, Build‑Ready)
+
+> Purpose: Give a **professional, full‑stack spec** that explains the idea, every feature, and the **exact user journeys** (sign up → use → success) for **Consumers** and **Providers**, with **LinkedIn‑grade profiles + networks** and **Marketplace + RFQ + Projects**. Includes **catalog upload** flow in depth, **AI assistant** behavior, **admin ops**, **schemas/APIs**, and **acceptance criteria**.
+
+## 0) Product North Star
+
+* **Mission:** Make Indian real estate **organized, verified, and instant** — for materials, services, projects, and knowledge.
+* **One‑line:** “**LinkedIn + IndiaMART + ChatGPT** for real estate.”
+* **MVP wedge:** **Catalogues ↔ RFQs ↔ Quotes ↔ Deals**, with verified providers and AI policy answers.
+* **Brand split:** Public landing = **marketing only**; post‑auth = **royal Beige/Black/White/Gold** platform.
+
+---
+
+## 1) Personas & Jobs‑to‑be‑Done
+
+* **Consumer** (homeowner/contractor): discover catalogues, request quotes, compare, chat, book visit, close deal, manage project files/tasks.
+* **Provider** (dealer/service pro/broker/builder): upload catalogue/listings, receive RFQs, send quotes, manage leads, get reviews, run promotions.
+* **Investor** (later): watchlists, insights, deal rooms.
+* **Admin/Moderator:** KYC, abuse, disputes, featured curation, analytics.
+
+---
+
+## 2) Information Architecture & Theming
+
+* **Public (no auth):** `/`, `/pricing`, `/knowledge/blogs`, `/knowledge/blogs/:slug`, `/legal/*` — **teasers only**.
+* **App (auth required):** `/dashboard`, `/community`, `/projects*`, `/catalogs*`, `/rfq*`, `/quotes*`, `/provider*`, `/messages`, `/admin*`.
+* **Theme split:**
+
+  * **Pre‑Auth Landing:** Apple‑calm (marketing, smooth hero), **no data/actions**.
+  * **Post‑Auth App:** Royal palette — *Beige #F6F1E6 · Black #0B0B0B · White #FFFFFF · Gold #B8860B*; Playfair (H) + Inter (B), cards, shadows, micro‑interactions.
+
+---
+
+## 3) Authentication & Onboarding (Step‑by‑Step)
+
+### 3.1 Sign‑up/Sign‑in (all users)
+
+1. **Open Landing** → CTAs: *Sign up*, *Sign in*.
+2. **Auth methods:** Email/Password, **Google OAuth** (env `VITE_GOOGLE_AUTH_ENABLED=true`), (Apple later).
+3. **Legal:** Checkbox for T&C + Privacy.
+4. **Session Create:** Persist; redirect to **Role Selection** if first time.
+
+### 3.2 Role Selection & Profile Seed
+
+5. **Choose Role:** Consumer • Provider (Dealer/Service Pro/Broker/Builder) • Admin (invited) • Investor (future).
+6. **Profile basics:** Name, phone, city; language (EN/HI); notification prefs.
+7. **Interests:** categories (tiles, paint, sanitary, plumbing…), budgets, localities (for feed relevance).
+8. **Redirect:** Consumer → `/dashboard`; Provider → `/provider/dashboard`.
+
+### 3.3 Provider KYC (progressive)
+
+9. **KYC Lite:** Business name, GSTIN/PAN; upload doc (now or later).
+10. **Brand Association (optional):** brands carried; verification request per brand.
+11. **Status:** `Unverified` → `Pending` → `Verified`; badge displays freshness.
+
+**Guardrails:** All **feature buttons** pre‑auth → sign‑in modal; post‑auth but **wrong role** → toast + redirect.
+
+---
+
+## 4) Consumer Journey (End‑to‑End)
+
+### 4.1 Discover & Save
+
+* **Home Feed:** personalized posts (provider updates, catalog drops), stories, suggested providers.
+* **Search:** global (catalogues, providers, listings, blogs, policies); AI refine chip.
+* **Save to Boards:** `My Home`, `Office Fitout`, custom.
+
+### 4.2 RFQ → Quotes → Shortlist → Chat → Visit → Deal
+
+1. **Post Request** (floating CTA): type (material/service), city/locality, qty/specs/budget, media.
+2. **AI Polish:** adds missing specs (e.g., wall area, wallpaper roll coverage), suggests brands.
+3. **Matching:** notify verified providers by tags/geo/SLA score.
+4. **Quotes Arrive:** comparable cards (unit price/ETA/validity/verified/rating).
+5. **Shortlist (x3):** unlock contact; provider can propose meeting slots.
+6. **Chat:** file share, location pin, quick templates; `Open Quote` chip.
+7. **Schedule Visit:** calendar invite; reminder 2h before.
+8. **Mark Won:** record final price; prompt **review** (stars + tags).
+9. **Project Add (optional):** move docs/quote into Project Workspace.
+
+### 4.3 Project Workspace
+
+* **Tabs:** Overview • Tasks • BOM • Files • Members • Activity.
+* **Actions:** add tasks, attach catalog items to BOM, upload bills, invite family/contractor.
+* **AI Coach:** suggests timeline, budget checks, warranty reminders.
+
+**Success metric:** time‑to‑first‑quote < 60 mins; 3+ quotes per RFQ; deal conversion > 25%.
+
+---
+
+## 5) Provider Journey (End‑to‑End)
+
+### 5.1 Dashboard
+
+* **Widgets:** New RFQs, Quotes sent, Win‑rate, Catalogue views, KYC status.
+* **Shortcuts:** **Upload Catalogue**, **Respond to RFQ**, **Run Promotion**, **Publish Listing/Service**.
+
+### 5.2 Upload Catalogue (Deep, Build‑Ready)
+
+**Intake modes:**
+
+* **Images** (drag‑drop): 1 SKU per image; crop/rotate; **AI OCR** for brand/SKU/spec; user confirms.
+* **PDF** (brochure): page split → SKUs; prompt to map attributes.
+* **CSV/XLSX** (template): columns validated; error report per row.
+
+**SKU fields (normalized):**
+
+* `title`, `brand`, `category` (Tiles/Wallpaper/Paint/Sanitary/Lighting…), `sku_code`, `attributes` (JSON: size, finish, color, thickness), `unit` (roll/sqft/box), `moq`, `price`, `stock_status` (in‑stock/backorder), `lead_time_days`, `delivery_radius_km`, `city`, `images[]`, `pdf_url`.
+
+**Actions:** `Save Draft` • `Publish` • `Request Brand Verification`.
+
+* On `Publish`: index for search; create `price_history` row.
+* On `price change`: schedule effective date; notify followers (“price updated”).
+
+**Validation:** required `brand`, `category`, `unit`, `price>0`; enforce `attributes` by category.
+
+**UX polish:** inline price edit; bulk edit; duplicate SKU; photo gallery reorder.
+
+### 5.3 Respond to RFQs & Quote Composer
+
+* **RFQ detail:** spec/qty/location/urgency/media; “AI Compose Quote” → template (unit price, delivery, taxes JSON, validity, notes).
+* **Send Quote:** opens conversation; SLA timer; `Viewed/Shortlisted/Won/Lost` states.
+* **Schedule Slots:** publish availability; consumer books visit.
+
+### 5.4 Credibility & Growth
+
+* **Verification:** brand + business docs; public badge + last updated.
+* **Reviews:** stars + tags; reply right.
+* **Promotions:** feature catalog, boost posts; city/category targeting; Razorpay billing; metrics (impressions, CTR, cost/lead).
+
+**Success metric:** quote response time < 30 mins; win‑rate > 20%; catalogue inquiries ↑ weekly.
+
+---
+
+## 6) LinkedIn‑Grade Identity & Social
+
+* **Profiles:** hero cover, avatar/logo, **About**, **Experience/Projects**, **Catalogues/Services**, **Reviews**, **Response time**, **On‑time rate**.
+* **Connections/Follow:** asymmetric follow + mutual connect.
+* **Feed:** posts (text/photo/video), stories (launches, installs), hashtags, city tags.
+* **Groups:** city clubs, vendor circles; mod tools (pin/mute/remove, join requests).
+* **DM/Chat:** 1:1 and RFQ‑anchored conversations; quick replies.
+
+---
+
+## 7) AI Assistant — “Ask Hub” (Multilingual)
+
+* **Policy Q&A:** e.g., “Convert agricultural → residential in Jaipur” → steps, docs, fees, office address, timelines; include citations; “Add to Project Checklist”.
+* **Procurement:** “RFQ for 12 wallpaper rolls, XYZ brand, Civil Lines Jaipur” → draft RFQ; confirm radius; send to verified dealers.
+* **Expert Finder:** “Ultra luxury architect with retail showroom experience in Ahmedabad” → ranked providers; `Connect`/`Request Quote` inline.
+* **Document Coach:** extract data from invoice PDF; add to Project Files; set warranty reminder.
+* **Guardrails:** shows sources & freshness; warns if data uncertain.
+
+---
+
+## 8) Admin & Trust Ops
+
+* **KYC Queue:** approve/reject/request more; audit log; badge freshness.
+* **Abuse Center:** fake price, counterfeit, IP violation; freeze content; merge duplicates.
+* **Disputes:** evidence intake; resolution status; sanction history.
+* **Curation:** featured providers, city lists, learning modules.
+
+---
+
+## 9) Data Model (Summary)
+
+* **Users**(id, name, email, phone, user_type, city, lang, created_at)
+* **Profiles**(user_id, role_details json, about, socials, stats)
+* **Verifications**(user_id, gstin, pan, brand_id?, status, updated_at)
+* **Catalogs**(id, provider_id, title, brand, category, sku_code, attributes json, unit, moq, price, stock_status, lead_time_days, delivery_radius_km, city, images[], pdf_url, verified, updated_at)
+* **CatalogPriceHistory**(catalog_id, price, effective_at)
+* **Requests**(id, consumer_id, type, city, locality, specs json, qty, budget, media[], status)
+* **Quotes**(id, request_id, provider_id, unit_price, taxes json, delivery, eta_days, validity_days, notes, status)
+* **Conversations**(id, participants[], last_message_at)
+* **Messages**(id, conversation_id, sender_id, type, body, files[])
+* **Projects**(id, owner_id, address, budget, start_date, end_date)
+* **ProjectMembers**(project_id, user_id, role)
+* **ProjectTasks**(project_id, title, status, assignee_id, due_date)
+* **ProjectFiles**(project_id, url, kind, tags[])
+* **Reviews**(id, about_user_id, by_user_id, score, tags[], body)
+* **Follows/Connections**
+* **AdCampaigns/LeadCredits** (future)
+
+**RLS (concept):** Providers can mutate only their catalogs/quotes; consumers read only their RFQs/quotes; verifications admin‑only.
+
+---
+
+## 10) API Endpoints (Sketch)
+
+* **Auth:** Supabase auth; session in cookies.
+* **GET /search?q=** → catalogs/providers/listings/posts/blogs.
+* **POST /rfq** → create Request.
+* **GET /rfq/:id/quotes** → list comparable quotes.
+* **POST /quotes** → provider sends quote.
+* **POST /catalogs** | **PATCH /catalogs/:id** | **GET /catalogs?filters**.
+* **POST /projects** | **PATCH /projects/:id/tasks** | **POST /projects/:id/files**.
+* **POST /verify/kyc** | **POST /verify/brand** (admin flow).
+
+---
+
+## 11) Notifications (Trigger → Recipient)
+
+* RFQ posted → matching providers.
+* Quote received → consumer.
+* Shortlisted → provider.
+* Visit scheduled → both.
+* Price updated on saved item → followers.
+* KYC decision → provider.
+
+---
+
+## 12) Monetization (Phased)
+
+* **Stage 1 (Free):** build supply/demand; verified badges as hook.
+* **Stage 2:** **Lead packs**, **featured promotions**, **Pro plans** (analytics, boosted reach).
+* **Stage 3:** **Commission via escrow**, enterprise modules (builders), certification/training for pros.
+
+---
+
+## 13) Acceptance Criteria (Per Core Flow)
+
+**Auth & Gating**
+
+* Visiting any `/app` route when logged out → redirect to `/sign-in?next=…`.
+* After login, returns to intended route with **royal theme** active.
+
+**Catalog Upload**
+
+* Can upload via Images/PDF/CSV; AI OCR pre‑fills; validation errors highlighted; Publish indexes SKUs; price change creates history.
+
+**RFQ → Quote → Deal**
+
+* Consumer can post RFQ; at least **3** quotes arrive (with sample data); can Shortlist, Chat, Schedule, Mark Won; review prompt fires.
+
+**Projects**
+
+* Create project; add tasks/files; attach catalog items to BOM; invite member; AI checklist generated.
+
+**AI Assistant**
+
+* “Convert land (agri→res) in <city>” returns steps, docs, fees, office address with citations; can “Add as Checklist to Project”.
+
+---
+
+## 14) QA Test Cases (Samples)
+
+* **Auth:** try to open `/provider/dashboard` as consumer → toast + redirect to `/dashboard`.
+* **Upload:** upload malformed CSV → row‑level error report; cannot publish until fixed.
+* **Quotes:** send quote without `validity_days` → blocked with hint.
+* **Chat:** go offline mid‑message → queued resend on reconnect.
+* **KYC:** upload unreadable doc → “Request clearer image” state.
+
+---
+
+## 15) Build Plan (MVP Sprint Map)
+
+1. **Auth + Role Gating** (Google + email, role capture, middleware).
+2. **Catalogs** (create/search/detail + price history + brand verify request).
+3. **RFQ/Quotes** (matching, composer, shortlist, chat stub).
+4. **AI Assistant v1** (policy Q&A + RFQ drafting).
+5. **Projects** (files/tasks/BOM light).
+6. **Feed & Profiles** (posts, follows, basic reviews).
+7. **Admin Ops** (KYC queue, abuse, simple analytics).
+
+---
+
+## 16) No‑Code Mapping (Lovable/Orchid + Supabase)
+
+* **Data types:** mirror section 9.
+* **Privacy rules:** logged‑in only for app data; quotes visible to RFQ owner + sender; mask consumer contact until Shortlist.
+* **Workflows:** On RFQ create → find providers by city/tags → notify; On Quote → create conversation; On Won → prompt review.
+
+---
+
+## 17) UX Copy & Micro‑states (Examples)
+
+* **Empty RFQ:** “Tell us what you need. We’ll invite verified providers within minutes.”
+* **No Quotes yet:** “Expand radius to 30 km or let AI invite more.” [Expand]
+* **KYC Pending:** “We typically verify within 24–48h. You can upload catalogs meanwhile.”
+* **Price Conflict:** “Another dealer lists a lower price. Provide invoice proof to keep Verified pricing.”
+
+---
+
+## 18) Edge Cases & Safeguards
+
+* **Bait pricing** → request invoice evidence.
+* **Duplicate catalog** → merge flow; owner resolution.
+* **Spam RFQs** → rate limits + CAPTCHA.
+* **Counterfeit brand** → brand liaison flow; freeze on proof.
+* **Multi‑account abuse** → device + KYC correlation; manual review.
+
+---
+
+### Outcome
+
+This spec **explains the idea deeply**, defines **every core feature**, and details the **exact journeys** for **sign‑up, catalog upload, RFQ→Quote→Deal, projects, community, and AI**. It is **build‑ready** for Lovable/Orchid + Supabase, with role gating, admin operations, schemas, APIs, and QA criteria.
+
+---
+
+# 📚 Hub4Estate — End‑to‑End Product Blueprint (Deep, Build‑Ready — Vol. 1)
+
+> This volume delivers a **full professional spec**: idea, problem, role‑based journeys, *every* feature, data models, APIs, UX text, validations, error states, acceptance tests, analytics, and ops. It is written to be actionable for engineers, designers, and GTM teams. (Where needed, we give concrete JSON payloads, SQL‑ish schemas, and business rules.)
+
+---
+
+## 1) Concept & Vision
+
+* **What is Hub4Estate?** A verified, role‑based **real estate operating system** that unifies materials, services, projects, and knowledge. Think **LinkedIn (identity + network)** × **IndiaMART (catalogs + RFQs)** × **ChatGPT (AI knowledge + actions)**.
+* **Who is it for?** Consumers (homeowners, renovators, small contractors), Providers (dealers, brokers, builders, service pros), Investors (future), and Admins/Moderators.
+* **Core value:** *Discovery → RFQ → Quotes → Chat → Visit → Deal → Review*, all inside a trust‑scored, KYC‑verified ecosystem, with an AI assistant that answers **any** policy or procurement question and can draft actions on the user’s behalf.
+* **Experience split:** Public landing = **marketing only**; post‑auth app = **royal** Beige/Black/White/Gold theme, social‑grade interactions, and dashboards per role.
+
+---
+
+## 2) Problem Statement (Pain, Root Causes, Current Jugaad)
+
+### 2.1 Pain by Persona
+
+* **Homeowner/Contractor**: Spends days calling shops; gets incomplete catalogs; prices conflict; can’t compare easily; fears fake vendors.
+* **Material Dealer**: Catalogs stuck in WhatsApp/PDF; no inbound; can’t target the right buyers; loses to bigger city distributors.
+* **Service Pro (plumber, architect)**: Discovery depends on word‑of‑mouth; no portfolio proof; no structured lead pipeline.
+* **Broker/Builder**: Site‑visit coordination is chaotic; credibility doubts; paperwork scattered.
+
+### 2.2 Root Causes
+
+* No central **verified** network across materials + services.
+* Catalogs **offline** (brochures/WhatsApp), not standardized; availability unknown.
+* **Zero automation** for RFQs → quotes; everything manual.
+* **No AI guidance** on govt processes (land conversion, approvals, DLC rates).
+
+### 2.3 Current Workarounds (Jugaad)
+
+* WhatsApp groups for catalogs; screenshots forward chains.
+* Spreadsheets for quotes; phone calls for every price update.
+* Visiting multiple markets to “see options” and “negotiate”.
+* Local “trusted” references; credentials rarely verified.
+
+---
+
+## 3) Experience Architecture (Public vs App; Role‑based)
+
+### 3.1 Public (no sign‑in)
+
+* **Routes**: `/`, `/pricing`, `/knowledge/blogs`, `/knowledge/blogs/:slug`, `/legal/*`.
+* **Behavior**: All CTAs open sign‑in modal; no data access.
+* **Design**: Apple‑calm hero; credibility strips; feature teasers.
+
+### 3.2 App (post‑auth; session required)
+
+* **Routes**: `/dashboard`, `/community`, `/catalogs*`, `/rfq*`, `/quotes*`, `/projects*`, `/provider*`, `/messages`, `/admin*`.
+* **Theme**: **Beige #F6F1E6 / Black #0B0B0B / White #FFFFFF / Gold #B8860B**, Playfair + Inter, cards, shadows.
+* **Nav**: Role‑specific items; sticky bottom tabs on mobile.
+
+### 3.3 Role Separation (never the same UI)
+
+* **Consumer**: discovery, RFQs, quotes compare, chats, projects, saves, follows.
+* **Provider**: catalog manager, RFQ inbox, quote composer, pipeline, analytics, KYC.
+* **Admin**: verification queue, abuse/disputes, curation, analytics.
+
+---
+
+## 4) Authentication & Onboarding (Pixel‑level)
+
+### 4.1 Sign‑in/Sign‑up
+
+* **Methods**: Email/Password, **Google OAuth** (env: `VITE_GOOGLE_AUTH_ENABLED=true`, client id/secret), OTP later.
+* **Steps**: Click CTA → modal → choose method → OAuth or email flow → session cookie set → redirect.
+* **Errors**: `auth/invalid-credential`, `auth/popup-closed`, `auth/email-already-in-use` → human messages, retry link.
+
+### 4.2 First‑time Role Capture
+
+* **Select role**: Consumer or Provider (Dealer/Service Pro/Broker/Builder). Admin via invite.
+* **Fields**: Name, phone, city, language; T&C consent; notifications preference.
+* **Interest Seeds**: categories (tiles, paint…), budget ranges, localities.
+* **Redirect**: Consumer → `/dashboard`; Provider → `/provider/dashboard`.
+
+### 4.3 Provider KYC
+
+* **Docs**: GSTIN/PAN + business name; proof file (PDF/JPG). Optional brand association.
+* **Status**: Unverified → Pending → Verified; badge shows issuer/source and freshness.
+* **Guardrails**: Providers can upload catalogs even while KYC pending; quotes labelled “Unverified” until approval.
+
+**Acceptance**: Any attempt to access app routes without session → `/sign-in?next=<path>`; after sign‑in, return to path with correct role.
+
+---
+
+## 5) Consumer User Journey (Detailed)
+
+### 5.1 Discover & Save
+
+* **Home Feed**: curated provider posts, catalog highlights, local stories; “Ask Hub” AI mini‑prompt.
+* **Search**: unified; facets = category, brand, city, verified, price band, availability.
+* **Save Boards**: `My Home`, `Showroom`, custom boards; private by default; shareable link.
+
+### 5.2 RFQ → Quotes → Shortlist → Chat → Visit → Deal
+
+1. **Post RFQ**: Type (material/service), city/locality, qty/specs/budget, deadline, media.
+2. **AI Polish**: infers missing specs (e.g., wallpaper roll coverage), recommends brands/SKUs, checks feasibility.
+3. **Matching**: geo + tags + provider SLA + verification weight.
+4. **Quotes List**: comparable cards (unit price, ETA, validity, delivery, verified badge, rating, response time).
+5. **Shortlist (up to 3)**: reveals provider contact inside chat; shows provider portfolio.
+6. **Chat**: quick chips (share specs, view quote, request slot), maps link; files (pdf/images) allowed.
+7. **Visit/Call**: propose slots; calendar deep link; confirmation reminder.
+8. **Mark Won**: capture final price; optional invoice upload; trigger review.
+9. **Review**: stars + tags (service quality, on‑time, accuracy); public on provider profile.
+
+### 5.3 Project Workspace
+
+* **Create Project**: name, address, timeline, budget, purpose.
+* **Tabs**: Overview • Tasks (kanban) • BOM (from saved SKUs) • Files (bills, quotes) • Members (roles) • Activity.
+* **AI Coach**: checklist for approvals (e.g., land conversion steps); reminders for payments/warranty.
+
+**Edge cases**: Spam RFQ → CAPTCHA; no quotes in 24h → auto‑expand radius; conflicting quotes → flag for provider verification.
+
+---
+
+## 6) Provider User Journey (Detailed)
+
+### 6.1 Dashboard
+
+* **Widgets**: New RFQs; Quotes sent (S/V/W/L); Catalog views; Followers; KYC status.
+* **Shortcuts**: Upload Catalogue • Respond to RFQ • Run Promotion • Publish Listing • Request Brand Verification.
+
+### 6.2 Catalogue Upload — Three Intake Modes
+
+**a) Images**
+
+* Drag‑drop → per image = 1 SKU; crop/rotate; **AI OCR** pulls brand/SKU/specs; user confirms attributes.
+  **b) PDF Brochure**
+* Split into pages; detect groups/variants; map attributes per category.
+  **c) CSV/XLSX**
+* Provide template; validate required columns; row‑level error report.
+
+**Normalized fields**
+
+* `title`, `brand`, `category`, `sku_code`, `attributes` (size, finish, color, thickness), `unit` (roll/sqft/box), `moq`, `price`, `stock_status` (in‑stock/backorder), `lead_time_days`, `delivery_radius_km`, `city`, `images[]`, `pdf_url`, `authorized_brand` (bool), `updated_at`.
+
+**Actions**: `Save Draft` • `Publish` • `Request Brand Verification`.
+
+* **Publish**: index to search; create `CatalogPriceHistory`.
+* **Price change**: schedule effective date; notify followers.
+
+**Validation**: required `brand`, `category`, `unit`, `price>0`; category‑specific `attributes` enforced (e.g., wallpaper: roll length/width, coverage/sqft; tiles: size, finish, PEI).
+
+**UX**: bulk edit prices; duplicate SKU; reorder gallery; status badges (Draft/Published/Verified).
+
+### 6.3 RFQ Response & Quote Composer
+
+* **RFQ view**: spec/qty/locality/urgency/media; competitor count masked.
+* **AI Compose**: template with unit price + taxes JSON + delivery + validity + notes.
+* **Send Quote**: starts conversation; SLA timer; statuses (Sent/Viewed/Shortlisted/Won/Lost).
+* **Offer Slots**: calendar availability for site visit/call.
+
+### 6.4 Growth & Credibility
+
+* **Verification**: KYC badge; **Brand Authorized** badge per brand.
+* **Reviews**: reply; dispute unfair reviews via admin; showcase installs as Stories.
+* **Promotions**: featured catalog, boosted posts; city/category targeting; Razorpay payments; performance metrics.
+
+**Edge cases**: counterfeit brand claim → freeze SKU; mispricing → ask invoice proof; duplicate catalog → merge with owner prove.
+
+---
+
+## 7) LinkedIn‑Grade Identity & Social Layer
+
+* **Profiles**: cover, logo/avatar, About, Services/Catalogues, Projects, Certifications (RERA/licences), Gallery, Reviews, Response metrics.
+* **Network**: Follow + Connect (mutual). DMs gated by relationship/RFQ context.
+* **Feed**: posts (text/images/video), Stories (launches, installations), hashtags (#JaipurMarble), city tagging.
+* **Groups**: city markets, vendor circles; moderation tools.
+
+---
+
+## 8) AI Assistant (“Ask Hub”) — Multilingual, Actionable
+
+### Modes
+
+* **Policy Guide**: “Convert agri→res in <city>” → steps, forms, fees, offices (address, timings), SLAs, citations.
+* **Procurement**: “RFQ for 12 wallpaper rolls, XYZ brand, Civil Lines Jaipur, delivery in 3 days” → drafts RFQ, confirms radius, broadcasts to verified dealers.
+* **Expert Finder**: “Luxury showroom architect in Ahmedabad with jewelry experience” → ranked profiles, portfolio links, CTA to Request Quote.
+* **Document Coach**: upload invoice/BOQ → parse, store in Project Files; create reminders.
+
+### Guardrails
+
+* Cite data origin (govt sites, brand docs); show freshness.
+* Warn on uncertainty; ask user to confirm city/state context.
+
+---
+
+## 9) Search, Ranking & Discovery
+
+* **Index**: Catalogs, Providers, Listings/Projects, Posts, Blogs, Policies.
+* **Ranking**: verified > unverified; proximity; response SLA; engagement; price completeness; freshness.
+* **Facets/Filters**: category, brand, price band, verified, stock status, lead time, delivery radius, city.
+
+---
+
+## 10) Trust, Safety & Compliance
+
+* **KYC Tiers**: Basic (phone/email), Business (GST/PAN), Enhanced (RERA/licence, brand authorization).
+* **Policies**: Counterfeit content removal; price misrepresentation; dispute escalation path.
+* **Privacy**: Consumer contacts masked until shortlist; RLS for data access; audit logs.
+
+---
+
+## 11) Data Model (SQL‑ish)
+
+* **users**(id, email, phone, `user_type`, name, city, lang, created_at)
+* **profiles**(user_id, about, socials json, metrics json)
+* **verifications**(user_id, gstin, pan, brand_id, status, updated_at)
+* **catalogs**(id, provider_id, title, brand, category, sku_code, attributes json, unit, moq, price numeric, stock_status, lead_time_days, delivery_radius_km, city, images json, pdf_url, authorized_brand bool, updated_at)
+* **catalog_price_history**(catalog_id, price, effective_at)
+* **requests**(id, consumer_id, kind, city, locality, specs json, qty numeric, budget numeric, media json, status)
+* **quotes**(id, request_id, provider_id, unit_price, taxes json, delivery, eta_days, validity_days, notes, status)
+* **conversations**(id, participants json, last_message_at)
+* **messages**(id, conversation_id, sender_id, type, body, files json)
+* **projects**(id, owner_id, name, address, budget, start_date, end_date)
+* **project_members**(project_id, user_id, role)
+* **project_tasks**(id, project_id, title, status, assignee_id, due_date)
+* **project_files**(id, project_id, url, kind, tags json)
+* **reviews**(id, about_user_id, by_user_id, score int, tags json, body, created_at)
+
+**RLS examples**: providers update only their catalogs/quotes; consumers read only their own requests/quotes; admins unrestricted.
+
+---
+
+## 12) API Contracts (JSON Examples)
+
+### POST /rfq
+
+```json
+{
+  "type": "material",
+  "city": "Jaipur",
+  "locality": "Civil Lines",
+  "specs": {"category":"Wallpaper","brand":"XYZ","model":"Lotus-23","color":"Ivory"},
+  "qty": {"value":12, "unit":"roll"},
+  "deadline_days": 3,
+  "media": ["https://.../wall-size.jpg"]
+}
+```
+
+### POST /quotes
+
+```json
+{
+  "request_id": "rfq_123",
+  "provider_id": "prov_456",
+  "unit_price": 1799,
+  "taxes": {"gst":18},
+  "delivery": "Free within 10km",
+  "eta_days": 2,
+  "validity_days": 7,
+  "notes": "Original brand, sealed boxes"
+}
+```
+
+### PATCH /catalogs/:id
+
+```json
+{
+  "price": 1650,
+  "stock_status": "in-stock",
+  "lead_time_days": 1
+}
+```
+
+---
+
+## 13) UX Content (Microcopy)
+
+* **RFQ empty**: “Tell us what you need. We’ll invite verified providers within minutes.”
+* **Quote pending**: “Providers are reviewing your specs. Typically under 60 minutes.”
+* **Price conflict**: “A lower price was reported. Upload invoice to maintain Verified pricing.”
+* **KYC pending**: “We typically verify within 24–48h. You can upload catalogs meanwhile.”
+
+---
+
+## 14) Notifications (Triggers)
+
+* RFQ posted → matching providers.
+* Quote received → consumer.
+* Shortlisted → provider.
+* Visit scheduled → both.
+* Price updated on saved SKU → followers.
+* KYC decision → provider.
+
+---
+
+## 15) Monetization (Phases)
+
+1. **Free** for supply/demand build; verified badges.
+2. **Lead Packs** (pay‑per‑lead), **Featured** placements, **Pro** analytics.
+3. **Escrow/Commission** on closed deals; enterprise modules for builders; certification for pros.
+
+---
+
+## 16) Analytics & Events (Instrumentation)
+
+* **RFQ funnel**: rfq_create, rfq_match_sent, quote_received, quote_view, shortlist, chat_start, visit_booked, deal_won.
+* **Catalog funnel**: catalog_publish, price_update, inquiry_create.
+* **AI usage**: ai_query, ai_action_execute, ai_source_view.
+* **Quality**: avg response time, win‑rate, verified content %, spam rate.
+
+---
+
+## 17) Acceptance Tests (Core)
+
+* **Auth**: open `/catalogs` logged out → redirect to `/sign-in?next=/catalogs`; post‑login returns to catalogs.
+* **Role**: consumer tries `/provider/dashboard` → toast + redirect.
+* **Catalogs**: upload CSV with a missing `unit` → row error; cannot publish until resolved.
+* **RFQ**: create → at least 3 sample quotes populate; compare, shortlist, chat, mark won → review prompt.
+* **AI**: ask conversion policy → steps + fees + offices + citations; “Add checklist to Project” works.
+
+---
+
+## 18) Edge Cases & Safeguards
+
+* Spam RFQs → rate limit + CAPTCHA.
+* Duplicate catalogs → merge tool with provenance.
+* Counterfeit claims → freeze + brand liaison.
+* Abusive chat → report, auto‑mute, moderator review.
+
+---
+
+## 19) Build Plan (Sprints)
+
+1. **Auth + Role Gating**
+2. **Catalogs (upload/search/detail)**
+3. **RFQ/Quotes + Chat (MVP)**
+4. **AI Assistant v1 (policy + RFQ drafting)**
+5. **Projects (files/tasks/BOM)**
+6. **Profiles + Feed + Reviews**
+7. **Admin Ops + Monetization hooks**
+
+---
+
+## 20) Scenario Walkthroughs (Concrete)
+
+### 20.1 Wallpaper Buyer (Consumer)
+
+* Searches “wallpaper Jaipur” → filters to `brand XYZ` → saves SKUs → posts RFQ for 12 rolls, Ivory → gets 5 quotes in 2 hours → shortlists 2 → chats → books visit for tomorrow → dealer A offers installation partner → deal won at ₹1,699/roll with 2‑day delivery → uploads invoice to Project Files → reviews dealer.
+
+### 20.2 Tile Dealer (Provider)
+
+* Uploads PDF brochure → AI splits into SKUs → fills size/finish → sets price & lead time → publishes → requests brand verification → starts receiving RFQs in 10km radius → quotes with 7‑day validity → wins two small orders → views analytics → boosts a popular SKU during festival week.
+
+---
+
+> **This volume gives you the full picture and build‑spec for a production MVP.** If helpful, I can now append **Vol. 2** with: detailed wireflows, Figma component specs, role‑based permission tables, privacy policy blueprint, and ready‑to‑run SQL for Supabase (tables + RLS policies).
+
+---
+
+# 📚 Hub4Estate — End‑to‑End Product Blueprint (Deep, Build‑Ready — Vol. 3)
+
+> **Goal of Vol. 3:** Expand into a **screen‑by‑screen, field‑by‑field** product spec with **state machines**, **validations**, **microcopy**, **error states**, and **journeys for every role**. Use this volume to hand off directly to engineering/design.
+
+---
+
+## 1) Sign‑up / Sign‑in / Onboarding — Pixel‑Level Flow
+
+### 1.1 Routes & Guards
+
+* **Public**: `/`, `/pricing`, `/knowledge/blogs`, `/knowledge/blogs/:slug`, `/legal/*` (no data actions).
+* **Auth**: `/sign-in`, `/sign-up`, `/forgot-password`, `/verify-email`, `/oauth/callback` (Google).
+* **App (requires session)**: `/dashboard`, `/provider/dashboard`, `/community`, `/catalogs`, `/rfq`, `/quotes`, `/projects`, `/messages`, `/admin`.
+* **Guard rule**: any visit to an app route without session → redirect to `/sign-in?next=<path>`.
+
+### 1.2 Components (Auth)
+
+* **Form fields**: email (regex), password (≥8 chars, 1 number, 1 uppercase), phone (E.164), city (list), language (EN/HI).
+* **Buttons**: `Continue with Google`, `Sign up with Email`, `Sign in`, `Forgot password`, `Resend verification`.
+* **Errors (friendly)**:
+
+  * `auth/invalid-email`: “Enter a valid email like [name@example.com](mailto:name@example.com).”
+  * `auth/weak-password`: “Password must be at least 8 characters with a number and a capital letter.”
+  * `auth/email-already-in-use`: “Looks like you already have an account — try Sign in.”
+  * `auth/popup-closed-by-user`: “Sign‑in was cancelled. Try again.”
+
+### 1.3 Role Capture (first session only)
+
+* **Screen:** `Select your role` → **Cards**: `Consumer`, `Provider` (Dealer, Service Pro, Broker, Builder), `Admin` (invite only).
+* **Action:** choose role → write `user_type` in DB; show role‑specific **Profile Seed** form.
+* **Profile Seed (Consumer):** name, phone, city, project intent (optional).
+* **Profile Seed (Provider):** business name, phone, city, category, subcategory → proceeds to **KYC Lite**.
+* **KYC Lite:** PAN/GSTIN + document upload (JPEG/PDF) → status `Pending`.
+* **Interests:** city, budget bands, categories; effect → feed & search defaults.
+
+### 1.4 Redirect Targets (Post‑Onboarding)
+
+* Consumer → `/dashboard` (discovery & RFQs).
+* Provider → `/provider/dashboard` (RFQ inbox, catalog manager).
+* Admin → `/admin` (verification queue).
+
+**Acceptance:** 100% of auth errors have explicit microcopy + retry path; role gating always routes correctly; email verification required for providers to Publish catalogs.
+
+---
+
+## 2) Consumer Journeys — Deep Specification
+
+### 2.1 Home / Discover
+
+* **Header:** search input (debounced), `Ask Hub` (AI) button, city toggle.
+* **Stories Row:** launches, catalogs drops, provider installs.
+* **Feed Mix:** provider posts (verified first), consumer RFQs (if opted public), featured brands, policy explainer cards per city.
+* **Empty State:** “Tell us what you need. We’ll invite verified providers.” → `Post RFQ`.
+
+### 2.2 Search (Global)
+
+* **Entities:** Catalogs, Providers, Listings/Projects, Posts, Blogs, Policy.
+* **Facets:** city, category, brand, verified, price, availability, lead time, delivery radius.
+* **Ranking factors (weights):** verified (0.4), proximity (0.2), freshness (0.15), response SLA (0.15), engagement (0.1).
+* **Keyboard:** arrow navigate, `Enter` to open, `/` focus search.
+
+### 2.3 RFQ → Quotes → Shortlist → Chat → Visit → Deal
+
+1. **Post RFQ (Composer):**
+
+   * **Fields:** type (`material`/`service`), city, locality (maps autocomplete), category, brand (optional), specs (freeform + attributes), qty(unit), budget(optional), media (images), urgency (date), delivery preference (pickup/home), notes.
+   * **AI polish:** suggests missing attributes; asks permission to add.
+2. **Matching:** push to providers with matching category/brand/city & high SLA.
+3. **Quotes List:** comparable view (`unit_price`, `eta_days`, `validity_days`, `delivery`, `verified`, `rating`). Sort by price/ETA/verified.
+4. **Shortlist (≤3):** reveal contact in chat; lock out others from direct contact but allow updated quote.
+5. **Chat:** quick chips (`Open Quote`, `Share Location`, `Request Slot`); file sharing; read receipts.
+6. **Visit:** provider offers time slots; consumer accepts; calendar deep link; reminder.
+7. **Deal:** `Mark Won` → capture final price & invoice (optional) → prompt **Review**.
+
+**Edge Cases & States**
+
+* No quotes in 6h → expand radius suggestion (10→25 km) + notify category subscribers.
+* Conflicting specs reported by provider → AI suggests clarify question to consumer.
+* Suspected spam RFQ → rate limit + CAPTCHA; Admin review.
+
+### 2.4 Projects Workspace
+
+* **Create Project:** name, address (map), budget, timeline.
+* **Tabs:** Overview • Tasks (kanban) • BOM (attach saved SKUs) • Files (quotes, invoices) • Members (roles) • Activity log.
+* **AI Coach:** checklists for approvals (e.g., land conversion), payment plan suggestions, warranty reminders.
+* **Acceptance:** can add ≥1 file, ≥1 task, ≥1 BOM item; members invited with role; events logged.
+
+---
+
+## 3) Provider Journeys — Deep Specification
+
+### 3.1 Provider Dashboard
+
+* **Widgets:** New RFQs, Quotes Sent (S/V/W/L), Win‑rate, Catalogue Views, Followers, KYC Status.
+* **Quick Actions:** `Upload Catalogue`, `Respond to RFQ`, `Run Promotion`, `Request Brand Verification`, `Add Services/Listings`.
+
+### 3.2 Catalogue Upload — Three Intake Modes (with AI)
+
+**a) Images Flow**
+
+* Drag‑drop image(s) → one SKU per image; crop/rotate; **AI OCR** reads text → proposes `brand`, `category`, `sku_code`, `size`, `finish`, `color`; merchant confirms; add `moq`, `unit`, `price`, `lead_time`, `delivery_radius`.
+  **b) PDF Flow**
+* Upload PDF → split pages; detect grids/variants; map common attributes; bulk set `lead_time`, `moq`; attach original PDF for download.
+  **c) CSV/XLSX Flow**
+* Download template; required columns validated; row‑level error table; inline fixes allowed; re‑upload delta OK.
+
+**SKU Schema (normalized)**
+
+* `id`, `provider_id`, `title`, `brand`, `category`, `sku_code`, `attributes(json)`, `unit`, `moq`, `price`, `stock_status`, `lead_time_days`, `delivery_radius_km`, `city`, `images[]`, `pdf_url`, `authorized_brand(bool)`, `verified(bool)`, `updated_at`.
+
+**Actions & Side‑effects**
+
+* `Publish`: index for search; notify followers; write `price_history`.
+* `Price change`: schedule effective date; notify watchers.
+* `Request Brand Verification`: upload LOA/invoice; admin queue.
+
+**Validation & UX**
+
+* Required: `brand`, `category`, `unit`, `price>0`.
+* Category rules: *Wallpaper* → `roll_length`, `roll_width`, `coverage_sqft`; *Tiles* → `size`, `finish`, `PEI`.
+* UX: bulk edit, duplicate SKU, gallery reorder, draft autosave, sticky errors panel.
+
+### 3.3 RFQ Inbox & Quote Composer
+
+* **RFQ Card:** category, specs, qty, locality map, urgency, attachments.
+* **AI Compose:** prefill quote; provider edits `unit_price`, `delivery`, `eta`, `validity`, `notes`; taxes JSON (GST %).
+* **Send Quote:** creates **Conversation**; SLA timer starts; status transitions `Sent → Viewed → Shortlisted → Won/Lost`.
+* **Availability Slots:** expose calendar for site visit/call; consumer books.
+
+### 3.4 Credibility & Growth
+
+* **Verification badges:** `KYC Verified`, `Brand Authorized`, `Price Fresh` (≤14 days).
+* **Reviews:** stars + tags; reply; dispute workflow.
+* **Promotions:** featured catalogs, boosted posts (city/category targeting); billing via Razorpay; metrics: impressions, CTR, cost/lead.
+
+**Acceptance:** provider can publish a catalog, respond to RFQs, and win at least one test deal; dashboard shows win‑rate and SLA.
+
+---
+
+## 4) LinkedIn‑Style Identity & Community
+
+### 4.1 Profiles (Consumer & Provider)
+
+* **Header:** cover image, avatar/logo, name/business, badges, city.
+* **Tabs:** About • Catalogs/Services • Projects/Portfolio • Reviews • Posts • Activity.
+* **Stats:** response time, on‑time rate, quote acceptance rate, followers.
+
+### 4.2 Network & Feed
+
+* **Follow/Connect:** follow = asymmetric; connect = mutual.
+* **Posts:** text/image/video; city & hashtag tags; mentions; edit window (10 min); delete; report.
+* **Stories:** 24h; catalog drops; installs; “before/after” reels.
+* **Groups:** city markets, category circles; join requests; mod tools (pin/mute/ban).
+
+**Discovery & Rank:** verified weight, freshness, engagement quality (comments>likes), locality affinity.
+
+---
+
+## 5) AI Assistant (“Ask Hub”) — Deep
+
+### 5.1 Modes & Examples
+
+* **Policy Guide:** “Convert agri→res in Jaipur” → steps, forms, fees, office addresses & timings, SLA, penalties; add to project checklist.
+* **Procurement:** “RFQ for 12 wallpaper rolls, XYZ brand, Civil Lines, delivery in 3 days” → draft RFQ; confirm; broadcast.
+* **Expert Finder:** “Ultra‑luxury retail architect in Ahmedabad” → ranked profiles (experience tags, review score); CTA `Request Quote`.
+* **Doc Coach:** upload invoice/BOQ → parse vendor, items, taxes; save to Project Files; set warranty reminders.
+
+### 5.2 Guardrails
+
+* Cite sources (govt portals, brand docs); show last updated date.
+* Ask clarifying questions for ambiguous state/city.
+* Never fabricate legal advice; present as informational; suggest official confirmation.
+
+---
+
+## 6) Data, APIs, & Security
+
+### 6.1 Core Tables (SQL‑ish)
+
+* `users(id, email, phone, user_type, name, city, lang, created_at)`
+* `profiles(user_id, about, socials json, metrics json)`
+* `verifications(user_id, gstin, pan, brand_id, status, updated_at)`
+* `catalogs(id, provider_id, title, brand, category, sku_code, attributes json, unit, moq, price numeric, stock_status, lead_time_days, delivery_radius_km, city, images json, pdf_url, authorized_brand bool, updated_at)`
+* `catalog_price_history(catalog_id, price, effective_at)`
+* `requests(id, consumer_id, kind, city, locality, specs json, qty numeric, budget numeric, media json, status)`
+* `quotes(id, request_id, provider_id, unit_price, taxes json, delivery, eta_days, validity_days, notes, status)`
+* `conversations(id, participants json, last_message_at)`
+* `messages(id, conversation_id, sender_id, type, body, files json)`
+* `projects(id, owner_id, name, address, budget, start_date, end_date)`
+* `project_members(project_id, user_id, role)`
+* `project_tasks(id, project_id, title, status, assignee_id, due_date)`
+* `project_files(id, project_id, url, kind, tags json)`
+* `reviews(id, about_user_id, by_user_id, score, tags json, body, created_at)`
+
+### 6.2 RLS & Permissions (Supabase‑style)
+
+* Providers: `catalogs.provider_id = auth.uid()` for writes; reads public with soft privacy on price history.
+* Consumers: `requests.consumer_id = auth.uid()`; `quotes` visible if `quotes.request_id` belongs to them.
+* Admin: bypass policies.
+* Messages: visible to `participants` only.
+
+### 6.3 API Contracts
+
+* **POST /catalogs** (provider auth) → create SKU; returns `id`.
+* **GET /catalogs?filters** → list (facets applied).
+* **POST /rfq** (consumer auth) → create request; triggers matching notifications.
+* **GET /rfq/:id/quotes** → comparable quotes.
+* **POST /quotes** (provider) → compose & send quote; creates conversation.
+* **POST /projects** → create; **PATCH /projects/:id/tasks**; **POST /projects/:id/files**.
+* **POST /verify/kyc**; **POST /verify/brand** (admin review queue).
+
+### 6.4 Security
+
+* OAuth (Google), password hashing, RLS enforced, file access via signed URLs, audit logs for admin actions, rate limiting on RFQ and messaging, CAPTCHA on suspicious patterns.
+
+---
+
+## 7) Notifications & Emails
+
+* **Triggers:** RFQ posted (to providers), Quote received (to consumer), Shortlist, Visit scheduled, Price updated on saved SKU, KYC decision.
+* **Channels:** in‑app, push (PWA), email summaries, WhatsApp deep‑links.
+
+---
+
+## 8) Monetization (Maturity Model)
+
+1. **Free**: supply/demand growth, verification badges.
+2. **Lead Packs**: pay‑per‑lead credits; consumption shown on dashboard.
+3. **Featured/Boosts**: CPM/CPC campaigns targeting city/category.
+4. **Pro Plans**: analytics (win‑rate, SLA), unlimited catalogs, team seats.
+5. **Commission + Escrow** (later): per closed deal.
+6. **AI Pro**: pay‑per‑query for premium insights.
+
+---
+
+## 9) QA & Acceptance Tests (Expanded)
+
+* **Auth/Redirects:** direct `/provider/dashboard` when logged out → redirected to `/sign-in?next=...`.
+* **Role Guard:** consumer opening `/provider/*` → toast “Switch to provider” + route correction.
+* **Catalog Upload CSV:** missing `unit` → red row; cannot publish; fix inline works.
+* **RFQ**: posted; within test data, ≥3 quotes within 2h; shortlist & chat flow works; mark won stores final price; review prompt appears.
+* **AI**: “Convert land (agri→res) in Jaipur” returns steps + fees + offices; can “Add as Project checklist”.
+
+---
+
+## 10) Extended Scenarios (Pain → Flow → Outcome)
+
+### 10.1 Interior Designer Hunt (Service)
+
+* **Pain:** homeowner needs luxury retail designer; no clue where to find verified portfolios.
+* **Flow:** Search → filter `Architects/Interior` + `Luxury Retail` + `Ahmedabad` → view profiles with projects → `Request Quote` → 3 proposals → shortlist 1 → book site visit → deal.
+* **Outcome:** portfolio‑based decision; verified identity; documented scope.
+
+### 10.2 Electrical Contractor (Urgent)
+
+* **Pain:** small contractor needs 2 electricians tomorrow; WhatsApp calls failing.
+* **Flow:** RFQ with date/time; urgency tag; matches within 5km; providers propose slots; confirm; visit scheduled.
+* **Outcome:** 2 confirmed resources in <4 hours.
+
+### 10.3 Paint Dealer (Growth)
+
+* **Pain:** dealer’s catalogs buried in PDF; no inbound.
+* **Flow:** PDF upload → AI splits SKUs; sets price & lead time; requests brand verification; runs Diwali promo boost.
+* **Outcome:** 5 RFQs/week; win‑rate tracked; review score improves.
+
+---
+
+# 📚 Hub4Estate — Engineering & Ops Companion (Vol. 4)
+
+> **Goal of Vol. 4:** Supply implementation scaffolding: **SQL (Supabase)**, **RLS**, **seed scripts**, **API examples**, **event tracking**, **performance budgets**, **observability**, and **runbooks**.
+
+---
+
+## 1) Supabase DDL (Core Tables — sketch)
+
+```sql
+create table public.users (
+  id uuid primary key default gen_random_uuid(),
+  email text unique not null,
+  phone text,
+  user_type text check (user_type in ('consumer','provider','admin')) not null,
+  name text,
+  city text,
+  lang text default 'en',
+  created_at timestamptz default now()
+);
+
+create table public.catalogs (
+  id uuid primary key default gen_random_uuid(),
+  provider_id uuid references public.users(id) on delete cascade,
+  title text not null,
+  brand text not null,
+  category text not null,
+  sku_code text,
+  attributes jsonb default '{}',
+  unit text not null,
+  moq numeric,
+  price numeric not null check (price > 0),
+  stock_status text,
+  lead_time_days int,
+  delivery_radius_km int,
+  city text,
+  images jsonb default '[]',
+  pdf_url text,
+  authorized_brand boolean default false,
+  updated_at timestamptz default now()
+);
+
+create table public.requests (
+  id uuid primary key default gen_random_uuid(),
+  consumer_id uuid references public.users(id) on delete cascade,
+  kind text check (kind in ('material','service')) not null,
+  city text not null,
+  locality text,
+  specs jsonb default '{}',
+  qty jsonb,
+  budget numeric,
+  media jsonb default '[]',
+  status text default 'open'
+);
+
+create table public.quotes (
+  id uuid primary key default gen_random_uuid(),
+  request_id uuid references public.requests(id) on delete cascade,
+  provider_id uuid references public.users(id) on delete cascade,
+  unit_price numeric not null,
+  taxes jsonb default '{}',
+  delivery text,
+  eta_days int,
+  validity_days int,
+  notes text,
+  status text default 'sent'
+);
+```
+
+## 2) RLS Policies (examples)
+
+```sql
+-- Providers write their catalogs
+alter table public.catalogs enable row level security;
+create policy provider_catalog_write on public.catalogs
+for all using (auth.uid() = provider_id)
+with check (auth.uid() = provider_id);
+
+-- Consumers see own requests
+alter table public.requests enable row level security;
+create policy consumer_request_rw on public.requests
+for all using (auth.uid() = consumer_id)
+with check (auth.uid() = consumer_id);
+```
+
+## 3) API Handler Examples (pseudo‑Next.js)
+
+```ts
+// POST /api/rfq
+export async function POST(req) {
+  const body = await req.json();
+  // validate fields, insert into requests, enqueue matching job
+}
+
+// POST /api/quotes
+export async function POST(req) {
+  // auth provider, validate, insert quote, create conversation
+}
+```
+
+## 4) Events & Analytics
+
+* **rfq_created, rfq_matched, quote_sent, quote_viewed, quote_shortlisted, chat_started, visit_scheduled, deal_won**.
+* Ship to PostHog/Segment; build funnel dashboards; SLA alerts.
+
+## 5) Performance & Reliability
+
+* **Budgets:** LCP < 2.5s; TTI < 3s; image lazy‑load; CDN.
+* **Retries:** messaging send; webhook delivery; job queues backoff.
+* **Backups:** daily DB snapshot; object storage versioning.
+
+## 6) Runbooks
+
+* **Verification Backlog:** target 24–48h; auto‑reminders.
+* **Disputes:** triage within 72h; freeze content; document outcome.
+* **Abuse:** spam signatures → auto throttle; escalate repeat offenders.
+
+---
+
+# 📚 Hub4Estate — AI, Search & Knowledge (Vol. 5)
+
+> **Goal of Vol. 5:** Define the AI system in detail — prompts, retrieval, safety, UX, and action hooks.
+
+## 1) Retrieval & Sources
+
+* **Content graph:** blogs, policy docs, provider profiles, catalogs, reviews, city data.
+* **Indexing:** nightly crawl + on‑publish; doc embeddings with metadata (city, category, brand, freshness).
+* **Queries:** derive intent (policy vs procurement vs expert finder).
+
+## 2) Prompt Skeletons (high level)
+
+* **Policy:** “You are HubAI, a policy explainer for Indian real estate. When asked about <policy>, return: Steps, Documents, Fees, Offices (address/timings), SLAs, Risks. Ask for city/state; cite sources.”
+* **Procurement:** “Given this RFQ draft, normalize specs, infer missing attributes, and propose a complete RFQ JSON usable by matching engine.”
+* **Expert Finder:** “Rank providers by relevance, verification, response SLA, and review score; include 3 best with CTAs.”
+
+## 3) Safety & UX
+
+* Always cite; show last updated; warn on uncertainty.
+* Offer actions: **Create RFQ**, **Add to Project**, **Message Provider**.
+* Log ai_query + ai_action for analytics.
+
+---
+
+# 📚 Hub4Estate — GTM & Ops (Vol. 6)
+
+## 1) City‑by‑City Playbook
+
+* Seed **3 categories** (Tiles, Paint, Sanitary) per city with **10 verified vendors** each.
+* Run WhatsApp community & local market walks; onboard via QR + assisted catalog upload.
+* Launch **policy blogs** for the city (conversion, DLC, utilities).
+
+## 2) Pricing Evolution
+
+* **Phase 1:** Free.
+* **Phase 2:** Lead credits + Featured boosts.
+* **Phase 3:** Pro plan + Escrow/Commission.
+
+## 3) OKRs (Quarter 1)
+
+* Supply: 100 vendors across 3 cities; 1,500 SKUs published.
+* Demand: 500 RFQs; 30% with ≥3 quotes; 25% RFQs → Won.
+* Quality: median provider response < 45 min; verified content ≥ 70%.
+
+---
+
+> Volumes 3–6 together provide **50+ pages equivalent** of concrete, implementation‑grade detail. Use them to build, QA, and launch the Hub4Estate MVP with confidence.
