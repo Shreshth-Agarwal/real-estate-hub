@@ -4,12 +4,10 @@
     "private": true,
     "scripts": {
         "dev": "next dev",
-        "dev:turbo": "npx turbo dev",
-        "dev:user": "npm --prefix apps/user run dev",
-        "dev:business": "npm --prefix apps/business run dev",
         "build": "next build",
         "start": "next start",
         "lint": "next lint",
+        "type-check": "tsc --noEmit",
         "format": "prettier --write \"**/*.{ts,tsx,md}\""
     },
     "dependencies": {
@@ -39,6 +37,8 @@
         "eslint-config-next": "^15.5.3",
         "prettier": "^3.4.2",
         "tailwindcss": "^4",
+        "tailwindcss-animate": "^1.0.7",
+        "tsc": "^5.5.4",
         "turbo": "^2.3.3",
         "tw-animate-css": "^1.3.8",
         "typescript": "^5"
