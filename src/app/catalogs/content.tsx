@@ -2,25 +2,30 @@
 
 import { useState, useEffect } from "react";
 import { useSession } from "@/lib/auth-client";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Search, Filter, MapPin, Package } from "lucide-react";
+import { Search, Filter, Package } from "lucide-react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import Image from "next/image";
+
+interface CatalogItem {
+  name: string;
+  price: string;
+  unit: string;
+  stock: string;
+}
 
 interface Catalog {
   id: number;
+  userId: string;
   title: string;
-  brand: string;
-  price: number;
-  currency: string;
-  unit: string;
-  city: string;
-  stockStatus: string;
-  description: string;
+  description: string | null;
+  category: string | null;
+  subCategory: string | null;
+  images: string[];
+  pdfUrl: string | null;
+  items: CatalogItem[];
+  isPublic: boolean;
+  createdAt: string;
+  userName: string;
 }
 
 export default function CatalogsContent() {
@@ -28,8 +33,7 @@ export default function CatalogsContent() {
   const [catalogs, setCatalogs] = useState<Catalog[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
-  const [city, setCity] = useState("");
-  const [brand, setBrand] = useState("");
+  const [category, setCategory] = useState("");
 
   useEffect(() => {
     fetchCatalogs();
@@ -37,15 +41,11 @@ export default function CatalogsContent() {
 
   const fetchCatalogs = async () => {
     try {
-      const token = localStorage.getItem("bearer_token");
       const params = new URLSearchParams();
       if (searchQuery) params.append("search", searchQuery);
-      if (city) params.append("city", city);
-      if (brand) params.append("brand", brand);
+      if (category && category !== '') params.append("category", category);
 
-      const response = await fetch(`/api/catalogs?${params.toString()}`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      const response = await fetch(`/api/catalogs/list?${params.toString()}`);
 
       const data = await response.json();
       if (response.ok) {
@@ -63,192 +63,240 @@ export default function CatalogsContent() {
     fetchCatalogs();
   };
 
+  const royalTheme = {
+    primary: '#4F46E5',
+    secondary: '#7C3AED',
+    gold: '#F59E0B',
+    background: '#F9FAFB',
+    white: '#FFFFFF',
+    text: '#1F2937',
+    textLight: '#6B7280',
+    border: '#E5E7EB',
+  };
+
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="border-b">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/">
-              <h1 className="text-2xl font-bold">Hub4Estate</h1>
-            </Link>
-            <div className="flex items-center gap-4">
-              {session?.user ? (
-                <Link href="/dashboard">
-                  <Button variant="outline">Dashboard</Button>
+    <div style={{ minHeight: '100vh', backgroundColor: royalTheme.background }}>
+      <header style={{ borderBottom: `1px solid ${royalTheme.border}`, backgroundColor: royalTheme.white }}>
+        <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <Link href="/" style={{ textDecoration: 'none' }}>
+            <h1 style={{ fontSize: '24px', fontWeight: 'bold', color: royalTheme.text }}>Hub4Estate</h1>
+          </Link>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            {session?.user ? (
+              <Link href="/dashboard" style={{
+                padding: '8px 16px',
+                backgroundColor: 'transparent',
+                color: royalTheme.text,
+                border: `1px solid ${royalTheme.border}`,
+                borderRadius: '6px',
+                textDecoration: 'none',
+                fontSize: '14px',
+              }}>
+                Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link href="/sign-in" style={{
+                  padding: '8px 16px',
+                  backgroundColor: 'transparent',
+                  color: royalTheme.text,
+                  textDecoration: 'none',
+                  fontSize: '14px',
+                }}>
+                  Sign In
                 </Link>
-              ) : (
-                <>
-                  <Link href="/sign-in">
-                    <Button variant="ghost">Sign In</Button>
-                  </Link>
-                  <Link href="/sign-up">
-                    <Button>Sign Up</Button>
-                  </Link>
-                </>
-              )}
-            </div>
+                <Link href="/sign-up" style={{
+                  padding: '8px 16px',
+                  backgroundColor: royalTheme.primary,
+                  color: 'white',
+                  borderRadius: '6px',
+                  textDecoration: 'none',
+                  fontSize: '14px',
+                }}>
+                  Sign Up
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </header>
 
-      <div className="container mx-auto px-4 py-8">
-        {/* Hero Section */}
-        <div className="mb-12 text-center">
-          <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-4xl md:text-5xl font-bold mb-4"
-          >
+      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '32px 16px' }}>
+        <div style={{ marginBottom: '48px', textAlign: 'center' }}>
+          <h1 style={{ fontSize: '48px', fontWeight: 'bold', color: royalTheme.text, marginBottom: '16px' }}>
             Discover Building Materials
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-xl text-muted-foreground mb-8"
-          >
+          </h1>
+          <p style={{ fontSize: '20px', color: royalTheme.textLight, marginBottom: '32px' }}>
             Browse catalogs from verified suppliers • Request quotes • Compare prices
-          </motion.p>
+          </p>
 
-          {/* Search Bar */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="max-w-4xl mx-auto"
-          >
-            <Card>
-              <CardContent className="pt-6">
-                <div className="flex flex-col md:flex-row gap-4">
-                  <div className="flex-1">
-                    <div className="relative">
-                      <Search className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                      <Input
-                        placeholder="Search for tiles, cement, fixtures..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && handleSearch()}
-                        className="pl-10"
-                      />
-                    </div>
-                  </div>
+          <div style={{ maxWidth: '1024px', margin: '0 auto', backgroundColor: royalTheme.white, borderRadius: '12px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr auto auto auto', gap: '16px' }}>
+              <div style={{ position: 'relative' }}>
+                <Search style={{ position: 'absolute', left: '12px', top: '12px', width: '16px', height: '16px', color: royalTheme.textLight }} />
+                <input
+                  type="text"
+                  placeholder="Search for tiles, cement, fixtures..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                  style={{
+                    width: '100%',
+                    padding: '10px 12px 10px 40px',
+                    border: `1px solid ${royalTheme.border}`,
+                    borderRadius: '6px',
+                    fontSize: '14px',
+                    outline: 'none',
+                  }}
+                />
+              </div>
 
-                  <Select value={city} onValueChange={setCity}>
-                    <SelectTrigger className="w-full md:w-[200px]">
-                      <MapPin className="h-4 w-4 mr-2" />
-                      <SelectValue placeholder="City" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">All Cities</SelectItem>
-                      <SelectItem value="Delhi">Delhi</SelectItem>
-                      <SelectItem value="Mumbai">Mumbai</SelectItem>
-                      <SelectItem value="Bangalore">Bangalore</SelectItem>
-                      <SelectItem value="Jaipur">Jaipur</SelectItem>
-                    </SelectContent>
-                  </Select>
+              <select
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+                style={{
+                  padding: '10px 12px',
+                  border: `1px solid ${royalTheme.border}`,
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  outline: 'none',
+                  backgroundColor: royalTheme.white,
+                  minWidth: '150px',
+                }}
+              >
+                <option value="">All Categories</option>
+                <option value="Materials">Materials</option>
+                <option value="Services">Services</option>
+                <option value="Equipment">Equipment</option>
+                <option value="Labor">Labor</option>
+                <option value="Design">Design</option>
+              </select>
 
-                  <Select value={brand} onValueChange={setBrand}>
-                    <SelectTrigger className="w-full md:w-[200px]">
-                      <Filter className="h-4 w-4 mr-2" />
-                      <SelectValue placeholder="Brand" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">All Brands</SelectItem>
-                      <SelectItem value="Kajaria">Kajaria</SelectItem>
-                      <SelectItem value="Asian Paints">Asian Paints</SelectItem>
-                      <SelectItem value="Jaquar">Jaquar</SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  <Button onClick={handleSearch} disabled={loading}>
-                    Search
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+              <button
+                onClick={handleSearch}
+                disabled={loading}
+                style={{
+                  padding: '10px 24px',
+                  backgroundColor: royalTheme.primary,
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  cursor: loading ? 'not-allowed' : 'pointer',
+                  opacity: loading ? 0.6 : 1,
+                }}
+              >
+                Search
+              </button>
+            </div>
+          </div>
         </div>
 
-        {/* Results */}
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
             {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Card key={i} className="animate-pulse">
-                <CardHeader className="space-y-2">
-                  <div className="h-4 bg-muted rounded w-3/4"></div>
-                  <div className="h-3 bg-muted rounded w-1/2"></div>
-                </CardHeader>
-                <CardContent>
-                  <div className="h-20 bg-muted rounded"></div>
-                </CardContent>
-              </Card>
+              <div key={i} style={{ backgroundColor: royalTheme.white, borderRadius: '12px', padding: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.1)' }}>
+                <div style={{ width: '100%', height: '200px', backgroundColor: royalTheme.border, borderRadius: '8px', marginBottom: '16px' }}></div>
+                <div style={{ width: '70%', height: '20px', backgroundColor: royalTheme.border, borderRadius: '4px', marginBottom: '8px' }}></div>
+                <div style={{ width: '50%', height: '16px', backgroundColor: royalTheme.border, borderRadius: '4px' }}></div>
+              </div>
             ))}
           </div>
         ) : catalogs.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {catalogs.map((catalog, index) => (
-              <motion.div
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '24px' }}>
+            {catalogs.map((catalog) => (
+              <Link
                 key={catalog.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
+                href={`/catalogs/${catalog.id}`}
+                style={{ textDecoration: 'none' }}
               >
-                <Card className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <CardTitle className="line-clamp-1">{catalog.title}</CardTitle>
-                        <CardDescription className="flex items-center gap-2 mt-1">
-                          <span>{catalog.brand}</span>
-                          <span>•</span>
-                          <span className="flex items-center gap-1">
-                            <MapPin className="h-3 w-3" />
-                            {catalog.city}
-                          </span>
-                        </CardDescription>
-                      </div>
-                      <Badge variant={catalog.stockStatus === "in" ? "default" : "secondary"}>
-                        {catalog.stockStatus === "in" ? "In Stock" : catalog.stockStatus === "out" ? "Out of Stock" : "Limited"}
-                      </Badge>
+                <div style={{
+                  backgroundColor: royalTheme.white,
+                  borderRadius: '12px',
+                  overflow: 'hidden',
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                  transition: 'box-shadow 0.2s',
+                  cursor: 'pointer',
+                  height: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 4px 6px rgba(0,0,0,0.15)'}
+                onMouseLeave={(e) => e.currentTarget.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)'}
+                >
+                  {catalog.images && catalog.images.length > 0 ? (
+                    <div style={{ position: 'relative', width: '100%', height: '200px', backgroundColor: royalTheme.border }}>
+                      <Image
+                        src={catalog.images[0]}
+                        alt={catalog.title}
+                        fill
+                        style={{ objectFit: 'cover' }}
+                      />
                     </div>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
-                      {catalog.description}
-                    </p>
-                    <div className="text-2xl font-bold">
-                      {catalog.currency === "INR" ? "₹" : "$"}
-                      {catalog.price.toLocaleString()}
-                      <span className="text-sm text-muted-foreground font-normal">
-                        /{catalog.unit}
-                      </span>
+                  ) : (
+                    <div style={{
+                      width: '100%',
+                      height: '200px',
+                      backgroundColor: royalTheme.border,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}>
+                      <Package style={{ width: '48px', height: '48px', color: royalTheme.textLight }} />
                     </div>
-                  </CardContent>
-                  <CardFooter className="flex gap-2">
-                    <Link href={`/catalogs/${catalog.id}`} className="flex-1">
-                      <Button variant="outline" className="w-full">
-                        View Details
-                      </Button>
-                    </Link>
-                    <Link href={`/catalogs/${catalog.id}/rfq`} className="flex-1">
-                      <Button className="w-full">Request Quote</Button>
-                    </Link>
-                  </CardFooter>
-                </Card>
-              </motion.div>
+                  )}
+                  
+                  <div style={{ padding: '24px', flex: 1, display: 'flex', flexDirection: 'column' }}>
+                    <div style={{ marginBottom: 'auto' }}>
+                      <h3 style={{ fontSize: '18px', fontWeight: '600', color: royalTheme.text, marginBottom: '8px', lineHeight: '1.4' }}>
+                        {catalog.title}
+                      </h3>
+                      <p style={{ fontSize: '14px', color: royalTheme.textLight, marginBottom: '12px', lineHeight: '1.5' }}>
+                        {catalog.description ? (catalog.description.length > 100 ? catalog.description.substring(0, 100) + '...' : catalog.description) : 'No description'}
+                      </p>
+                    </div>
+                    
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '16px' }}>
+                      {catalog.category && (
+                        <span style={{
+                          padding: '4px 12px',
+                          backgroundColor: `${royalTheme.primary}15`,
+                          color: royalTheme.primary,
+                          borderRadius: '12px',
+                          fontSize: '12px',
+                          fontWeight: '500',
+                        }}>
+                          {catalog.category}
+                        </span>
+                      )}
+                      {catalog.items && catalog.items.length > 0 && (
+                        <span style={{ fontSize: '12px', color: royalTheme.textLight }}>
+                          {catalog.items.length} item{catalog.items.length !== 1 ? 's' : ''}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </Link>
             ))}
           </div>
         ) : (
-          <Card>
-            <CardContent className="py-12">
-              <div className="text-center text-muted-foreground">
-                <Package className="mx-auto h-12 w-12 mb-4 opacity-50" />
-                <p className="text-lg font-medium mb-2">No catalogs found</p>
-                <p className="text-sm">Try adjusting your search filters</p>
-              </div>
-            </CardContent>
-          </Card>
+          <div style={{
+            backgroundColor: royalTheme.white,
+            borderRadius: '12px',
+            padding: '48px',
+            textAlign: 'center',
+            boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+          }}>
+            <Package style={{ width: '48px', height: '48px', margin: '0 auto 16px', color: royalTheme.textLight, opacity: 0.5 }} />
+            <p style={{ fontSize: '18px', fontWeight: '500', color: royalTheme.text, marginBottom: '8px' }}>
+              No catalogs found
+            </p>
+            <p style={{ fontSize: '14px', color: royalTheme.textLight }}>
+              Try adjusting your search filters
+            </p>
+          </div>
         )}
       </div>
     </div>

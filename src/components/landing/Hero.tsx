@@ -1,385 +1,258 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { motion, useScroll, useTransform, useInView } from "framer-motion";
-import { ArrowRight, Sparkles } from "lucide-react";
-import { useRef } from "react";
+import { ArrowRight, Check, Trophy } from "lucide-react";
 
 const royalColors = {
   beige: '#F6F1E6',
   black: '#0B0B0B',
-  gold: '#B8860B',
+  gold: '#D4AF37',
   white: '#FFFFFF',
 };
 
 export default function Hero() {
   const router = useRouter();
-  const containerRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(contentRef, { once: true, amount: 0.3 });
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end start"],
-  });
-
-  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
-  const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.8, 0.3]);
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.2,
-      },
-    },
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 30 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.8,
-        ease: [0.25, 0.4, 0.25, 1] as const,
-      },
-    },
-  };
-
-  const orbVariants = {
-    animate: (custom: number) => ({
-      y: [0, -30, 0],
-      x: [0, custom * 15, 0],
-      scale: [1, 1.1, 1],
-      opacity: [0.4, 0.6, 0.4],
-      transition: {
-        duration: 6 + custom * 0.5,
-        repeat: Infinity,
-        ease: "easeInOut" as const,
-      },
-    }),
-  };
+  const features = [
+    "Verified professionals",
+    "Searchable catalogs",
+    "Instant quotes",
+    "Project workspace",
+    "Policy AI"
+  ];
 
   return (
     <section 
-      ref={containerRef}
       style={{
         position: 'relative',
         minHeight: '100vh',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        overflow: 'hidden',
-        paddingTop: '5rem',
-        background: `linear-gradient(135deg, ${royalColors.beige} 0%, #E8DCC8 100%)`,
+        paddingTop: '6rem',
+        paddingBottom: '4rem',
+        background: `linear-gradient(135deg, ${royalColors.beige} 0%, #F8F3E8 50%, ${royalColors.beige} 100%)`,
       }}
     >
-      {/* Floating Animated Orbs */}
-      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
-        {[...Array(8)].map((_, i) => (
-          <motion.div
-            key={i}
-            custom={i}
-            variants={orbVariants}
-            animate="animate"
-            style={{
-              position: 'absolute',
-              left: `${10 + i * 12}%`,
-              top: `${15 + i * 10}%`,
-              width: `${80 + i * 20}px`,
-              height: `${80 + i * 20}px`,
-              borderRadius: '50%',
-              background: i % 2 === 0 
-                ? `radial-gradient(circle, ${royalColors.gold}30, ${royalColors.gold}10)` 
-                : `radial-gradient(circle, ${royalColors.black}20, ${royalColors.black}05)`,
-              filter: 'blur(40px)',
-              opacity: 0.4,
-            }}
-          />
-        ))}
-      </div>
+      {/* Simple decorative circles */}
+      <div style={{ 
+        position: 'absolute',
+        top: '10%',
+        right: '10%',
+        width: '300px',
+        height: '300px',
+        borderRadius: '50%',
+        background: `radial-gradient(circle, ${royalColors.gold}10, transparent 70%)`,
+      }} />
+      <div style={{ 
+        position: 'absolute',
+        bottom: '10%',
+        left: '10%',
+        width: '250px',
+        height: '250px',
+        borderRadius: '50%',
+        background: `radial-gradient(circle, ${royalColors.gold}08, transparent 70%)`,
+      }} />
 
-      {/* Parallax Background Shapes */}
-      <motion.div 
-        style={{ 
-          position: 'absolute',
-          inset: 0,
-          y,
-          opacity,
-        }}
-      >
+      <div style={{ 
+        position: 'relative',
+        maxWidth: '1280px',
+        margin: '0 auto',
+        padding: '0 1.5rem',
+        zIndex: 10,
+      }}>
         <div style={{ 
-          position: 'absolute',
-          top: '10%',
-          right: '5%',
-          width: '500px',
-          height: '500px',
-          borderRadius: '50%',
-          background: `radial-gradient(circle, ${royalColors.gold}15, transparent 70%)`,
-          filter: 'blur(60px)',
-        }} />
-        <div style={{ 
-          position: 'absolute',
-          bottom: '20%',
-          left: '10%',
-          width: '400px',
-          height: '400px',
-          borderRadius: '50%',
-          background: `radial-gradient(circle, ${royalColors.black}10, transparent 70%)`,
-          filter: 'blur(80px)',
-        }} />
-      </motion.div>
-
-      <motion.div
-        ref={contentRef}
-        variants={containerVariants}
-        initial="hidden"
-        animate={isInView ? "visible" : "hidden"}
-        style={{ 
-          position: 'relative',
-          maxWidth: '1280px',
+          display: 'flex', 
+          flexDirection: 'column', 
+          gap: '2rem', 
+          alignItems: 'center', 
+          textAlign: 'center',
+          maxWidth: '900px',
           margin: '0 auto',
-          padding: '5rem 1.5rem',
-          zIndex: 10,
-        }}
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', alignItems: 'center', textAlign: 'center' }}>
-          <motion.div
-            variants={itemVariants}
-            whileHover={{ scale: 1.05 }}
-            transition={{ duration: 0.3 }}
+        }}>
+          {/* Trust Badge */}
+          <div
             style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: '0.5rem',
               padding: '0.625rem 1.25rem',
-              background: `${royalColors.gold}15`,
+              background: royalColors.white,
               border: `1px solid ${royalColors.gold}40`,
               borderRadius: '9999px',
               fontSize: '0.875rem',
               fontWeight: '500',
+              boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
             }}
           >
-            <motion.div
-              animate={{ rotate: [0, 10, -10, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            >
-              <Sparkles style={{ width: '1rem', height: '1rem', color: royalColors.gold }} />
-            </motion.div>
-            <span style={{ color: royalColors.gold, fontWeight: '600' }}>
-              India's Most Trusted Real Estate Platform
+            <Trophy style={{ width: '1rem', height: '1rem', color: royalColors.gold }} />
+            <span style={{ color: royalColors.black }}>
+              Trusted by 10,000+ real estate professionals
             </span>
-          </motion.div>
+          </div>
 
-          <motion.h1
-            variants={itemVariants}
+          {/* Main Heading */}
+          <h1
             style={{
-              fontSize: 'clamp(2.5rem, 8vw, 5rem)',
+              fontSize: 'clamp(2.5rem, 7vw, 4.5rem)',
               fontWeight: 'bold',
               lineHeight: '1.1',
               letterSpacing: '-0.02em',
               color: royalColors.black,
+              marginBottom: '1rem',
             }}
           >
-            One place for{" "}
-            <motion.span 
+            One place for every
+            <span 
               style={{
                 display: 'block',
-                background: `linear-gradient(135deg, ${royalColors.gold}, ${royalColors.black})`,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-              }}
-              animate={{ 
-                backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
-              }}
-              transition={{ 
-                duration: 5, 
-                repeat: Infinity, 
-                ease: "linear" 
+                color: royalColors.gold,
+                marginTop: '0.5rem',
               }}
             >
-              every real-estate need
-            </motion.span>
-          </motion.h1>
+              real-estate need
+            </span>
+          </h1>
 
-          <motion.p
-            variants={itemVariants}
-            style={{
-              fontSize: 'clamp(1.125rem, 3vw, 1.5rem)',
-              color: `${royalColors.black}cc`,
-              maxWidth: '42rem',
-              lineHeight: '1.6',
-            }}
-          >
-            Connect with verified professionals, browse searchable catalogs, get instant quotes, and manage projects — all powered by AI
-          </motion.p>
+          {/* Subheading */}
+          <p style={{
+            fontSize: 'clamp(1.125rem, 2.5vw, 1.5rem)',
+            color: `${royalColors.black}cc`,
+            maxWidth: '650px',
+            lineHeight: '1.5',
+            marginBottom: '1rem',
+          }}>
+            From materials to professionals, quotes to project management—all in one intelligent platform
+          </p>
 
-          <motion.div
-            variants={itemVariants}
-            style={{
-              display: 'flex',
-              flexDirection: 'row',
-              gap: '1rem',
-              paddingTop: '1rem',
-              flexWrap: 'wrap',
-              justifyContent: 'center',
-            }}
-          >
-            <motion.button
+          {/* Feature Points */}
+          <div style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '1rem',
+            justifyContent: 'center',
+            marginBottom: '1rem',
+          }}>
+            {features.map((feature, index) => (
+              <div
+                key={index}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.5rem',
+                  padding: '0.5rem 0.75rem',
+                  background: royalColors.white,
+                  borderRadius: '0.5rem',
+                  fontSize: '0.95rem',
+                  color: royalColors.black,
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                }}
+              >
+                <Check style={{ width: '1rem', height: '1rem', color: royalColors.gold }} />
+                {feature}
+              </div>
+            ))}
+          </div>
+
+          {/* CTA Buttons */}
+          <div style={{
+            display: 'flex',
+            gap: '1rem',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
+            marginTop: '1rem',
+          }}>
+            <button
               onClick={() => router.push('/sign-up')}
-              whileHover={{ scale: 1.05, boxShadow: `0 10px 30px ${royalColors.gold}40` }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ duration: 0.2 }}
               style={{
-                position: 'relative',
-                padding: '1rem 2.5rem',
+                padding: '0.875rem 2rem',
                 fontSize: '1.125rem',
                 fontWeight: '500',
                 color: royalColors.white,
-                background: royalColors.gold,
+                background: royalColors.black,
                 border: 'none',
                 borderRadius: '0.5rem',
                 cursor: 'pointer',
                 display: 'inline-flex',
                 alignItems: 'center',
-                justifyContent: 'center',
                 gap: '0.5rem',
+                transition: 'transform 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'scale(1.05)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'scale(1)';
               }}
             >
-              <span>Get Started Free</span>
-              <motion.div
-                animate={{ x: [0, 5, 0] }}
-                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-              >
-                <ArrowRight size={20} />
-              </motion.div>
-            </motion.button>
-            <motion.button
-              onClick={() => {
-                const element = document.getElementById('how-it-works');
-                element?.scrollIntoView({ behavior: 'smooth' });
-              }}
-              whileHover={{ 
-                scale: 1.05, 
-                borderColor: royalColors.gold,
-                backgroundColor: `${royalColors.gold}10`,
-              }}
-              whileTap={{ scale: 0.95 }}
-              transition={{ duration: 0.2 }}
+              Get Started
+              <ArrowRight style={{ width: '1.25rem', height: '1.25rem' }} />
+            </button>
+            
+            <button
+              onClick={() => router.push('/provider/setup')}
               style={{
-                padding: '1rem 2.5rem',
+                padding: '0.875rem 2rem',
                 fontSize: '1.125rem',
                 fontWeight: '500',
                 color: royalColors.black,
                 background: 'transparent',
-                border: `2px solid ${royalColors.gold}60`,
+                border: `2px solid ${royalColors.black}`,
                 borderRadius: '0.5rem',
                 cursor: 'pointer',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = royalColors.black;
+                e.currentTarget.style.color = royalColors.white;
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'transparent';
+                e.currentTarget.style.color = royalColors.black;
               }}
             >
-              Learn More
-            </motion.button>
-          </motion.div>
+              List Your Shop
+            </button>
+          </div>
 
-          <motion.div
-            variants={itemVariants}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '2rem',
-              paddingTop: '2rem',
-              flexWrap: 'wrap',
-              justifyContent: 'center',
-            }}
-          >
-            {[
-              { value: "50K+", label: "Active Users" },
-              { value: "10K+", label: "Products" },
-              { value: "98%", label: "Trust Score" },
-            ].map((stat, i) => (
-              <motion.div 
-                key={i}
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.5 }}
-                transition={{ 
-                  delay: 0.8 + i * 0.1, 
-                  duration: 0.5,
-                  ease: [0.25, 0.4, 0.25, 1],
-                }}
-                whileHover={{ scale: 1.1, y: -5 }}
-              >
-                <motion.div 
-                  style={{ 
-                    fontSize: 'clamp(2rem, 4vw, 2.5rem)', 
-                    fontWeight: 'bold', 
-                    color: royalColors.black,
-                    marginBottom: '0.25rem',
-                  }}
-                  animate={{ 
-                    textShadow: [
-                      `0 0 0px ${royalColors.gold}00`,
-                      `0 0 20px ${royalColors.gold}40`,
-                      `0 0 0px ${royalColors.gold}00`,
-                    ],
-                  }}
-                  transition={{ 
-                    duration: 3, 
-                    repeat: Infinity, 
-                    delay: i * 0.5 
-                  }}
-                >
-                  {stat.value}
-                </motion.div>
-                <div style={{ fontSize: '0.875rem', color: `${royalColors.black}80` }}>{stat.label}</div>
-              </motion.div>
-            ))}
-          </motion.div>
+          {/* Trust Indicators */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+            gap: '2rem',
+            marginTop: '3rem',
+            paddingTop: '2rem',
+            borderTop: `1px solid ${royalColors.gold}20`,
+            width: '100%',
+            maxWidth: '600px',
+          }}>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '2rem', fontWeight: 'bold', color: royalColors.black }}>10K+</div>
+              <div style={{ fontSize: '0.875rem', color: `${royalColors.black}99` }}>Active Users</div>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '2rem', fontWeight: 'bold', color: royalColors.black }}>50K+</div>
+              <div style={{ fontSize: '0.875rem', color: `${royalColors.black}99` }}>Products Listed</div>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '2rem', fontWeight: 'bold', color: royalColors.black }}>100%</div>
+              <div style={{ fontSize: '0.875rem', color: `${royalColors.black}99` }}>Verified</div>
+            </div>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontSize: '2rem', fontWeight: 'bold', color: royalColors.black }}>4.8★</div>
+              <div style={{ fontSize: '0.875rem', color: `${royalColors.black}99` }}>User Rating</div>
+            </div>
+          </div>
         </div>
-      </motion.div>
+      </div>
 
-      {/* Scroll Indicator */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.5, duration: 0.8 }}
-        style={{
-          position: 'absolute',
-          bottom: '2rem',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          zIndex: 10,
-        }}
-      >
-        <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-          style={{
-            width: '24px',
-            height: '40px',
-            border: `2px solid ${royalColors.gold}`,
-            borderRadius: '12px',
-            display: 'flex',
-            alignItems: 'flex-start',
-            justifyContent: 'center',
-            padding: '6px',
-          }}
-        >
-          <motion.div
-            animate={{ y: [0, 12, 0], opacity: [1, 0.3, 1] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-            style={{
-              width: '4px',
-              height: '8px',
-              background: royalColors.gold,
-              borderRadius: '2px',
-            }}
-          />
-        </motion.div>
-      </motion.div>
+      <style jsx>{`
+        @media (max-width: 640px) {
+          section {
+            padding-top: 5rem !important;
+          }
+        }
+      `}</style>
     </section>
   );
 }

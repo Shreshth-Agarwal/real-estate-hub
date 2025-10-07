@@ -1,21 +1,20 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone, MapPin } from "lucide-react";
+import { Facebook, Twitter, Instagram, Linkedin, Mail, Phone } from "lucide-react";
 
 const royalColors = {
   beige: '#F6F1E6',
   black: '#0B0B0B',
-  gold: '#B8860B',
+  gold: '#D4AF37',
   white: '#FFFFFF',
 };
 
 export default function Footer() {
   const footerLinks = {
-    Product: ["Features", "Catalog Search", "RFQ System"],
-    "For Business": ["List Your Shop", "Become Provider"],
-    Resources: ["Blog", "Help Center", "Community"],
-    Company: ["About Us", "Contact", "Legal"],
+    Product: ["Features", "Catalog Search", "RFQ System", "AI Assistant"],
+    "For Business": ["List Your Shop", "Become Provider", "KYC Verification", "Pricing Plans"],
+    Resources: ["Blog", "Help Center", "Community", "API Documentation"],
+    Company: ["About Us", "Contact", "Legal", "Privacy Policy"],
   };
 
   const socialLinks = [
@@ -35,21 +34,17 @@ export default function Footer() {
       <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
           gap: '2rem',
           marginBottom: '3rem',
         }}>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}
-          >
+          {/* Brand Section */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <div style={{
                 width: '2.5rem',
                 height: '2.5rem',
-                background: `linear-gradient(135deg, ${royalColors.gold}, ${royalColors.gold}cc)`,
+                background: royalColors.gold,
                 borderRadius: '0.5rem',
                 display: 'flex',
                 alignItems: 'center',
@@ -88,29 +83,44 @@ export default function Footer() {
                     width: '2.25rem',
                     height: '2.25rem',
                     borderRadius: '0.5rem',
-                    background: royalColors.beige,
+                    background: `${royalColors.beige}15`,
+                    border: `1px solid ${royalColors.beige}20`,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: royalColors.black,
+                    color: royalColors.beige,
                     textDecoration: 'none',
+                    transition: 'all 0.2s ease',
                   }}
                   aria-label={social.label}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.background = royalColors.gold;
+                    e.currentTarget.style.color = royalColors.white;
+                    e.currentTarget.style.borderColor = royalColors.gold;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.background = `${royalColors.beige}15`;
+                    e.currentTarget.style.color = royalColors.beige;
+                    e.currentTarget.style.borderColor = `${royalColors.beige}20`;
+                  }}
                 >
                   <social.icon style={{ width: '1rem', height: '1rem' }} />
                 </a>
               ))}
             </div>
-          </motion.div>
+          </div>
 
+          {/* Links Sections */}
           {Object.entries(footerLinks).map(([category, links]) => (
-            <motion.div
-              key={category}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <h3 style={{ fontWeight: '600', marginBottom: '1rem', color: royalColors.gold }}>{category}</h3>
+            <div key={category}>
+              <h3 style={{ 
+                fontWeight: '600', 
+                marginBottom: '1rem', 
+                color: royalColors.gold,
+                fontSize: '1rem',
+              }}>
+                {category}
+              </h3>
               <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
                 {links.map((link) => (
                   <li key={link}>
@@ -120,6 +130,13 @@ export default function Footer() {
                         fontSize: '0.875rem',
                         color: `${royalColors.beige}cc`,
                         textDecoration: 'none',
+                        transition: 'color 0.2s ease',
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.color = royalColors.gold;
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.color = `${royalColors.beige}cc`;
                       }}
                     >
                       {link}
@@ -127,7 +144,7 @@ export default function Footer() {
                   </li>
                 ))}
               </ul>
-            </motion.div>
+            </div>
           ))}
         </div>
 
@@ -135,14 +152,53 @@ export default function Footer() {
           paddingTop: '2rem',
           borderTop: `1px solid ${royalColors.gold}20`,
           display: 'flex',
-          flexDirection: 'column',
+          flexWrap: 'wrap',
+          justifyContent: 'space-between',
           alignItems: 'center',
           gap: '1rem',
-          fontSize: '0.875rem',
-          color: `${royalColors.beige}cc`,
         }}>
-          <div>
+          <div style={{
+            fontSize: '0.875rem',
+            color: `${royalColors.beige}99`,
+          }}>
             © {new Date().getFullYear()} Hub4Estate. All rights reserved.
+          </div>
+          
+          <div style={{
+            display: 'flex',
+            gap: '2rem',
+            fontSize: '0.875rem',
+          }}>
+            <a href="#" style={{ 
+              color: `${royalColors.beige}99`, 
+              textDecoration: 'none',
+              transition: 'color 0.2s ease',
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.color = royalColors.gold}
+            onMouseLeave={(e) => e.currentTarget.style.color = `${royalColors.beige}99`}
+            >
+              Terms of Service
+            </a>
+            <a href="#" style={{ 
+              color: `${royalColors.beige}99`, 
+              textDecoration: 'none',
+              transition: 'color 0.2s ease',
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.color = royalColors.gold}
+            onMouseLeave={(e) => e.currentTarget.style.color = `${royalColors.beige}99`}
+            >
+              Privacy Policy
+            </a>
+            <a href="#" style={{ 
+              color: `${royalColors.beige}99`, 
+              textDecoration: 'none',
+              transition: 'color 0.2s ease',
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.color = royalColors.gold}
+            onMouseLeave={(e) => e.currentTarget.style.color = `${royalColors.beige}99`}
+            >
+              Cookie Policy
+            </a>
           </div>
         </div>
       </div>

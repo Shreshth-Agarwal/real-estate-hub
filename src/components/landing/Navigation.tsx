@@ -2,21 +2,18 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 
 const royalColors = {
   beige: '#F6F1E6',
   black: '#0B0B0B',
-  gold: '#B8860B',
+  gold: '#D4AF37',
   white: '#FFFFFF',
 };
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -27,69 +24,69 @@ export default function Navigation() {
   }, []);
 
   const navLinks = [
-    { href: "#features", label: "Features" },
-    { href: "#how-it-works", label: "How It Works" },
+    { href: "/catalogs", label: "Catalogs" },
+    { href: "/knowledge", label: "Knowledge Hub" },
+    { href: "/provider/dashboard", label: "Providers" },
+    { href: "/projects", label: "Projects" },
+    { href: "/community", label: "Community" },
     { href: "/pricing", label: "Pricing" },
   ];
 
   return (
-    <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
+    <nav
       style={{
         position: 'fixed',
         top: 0,
         left: 0,
         right: 0,
         zIndex: 50,
-        background: isScrolled ? 'rgba(246, 241, 230, 0.95)' : 'transparent',
-        backdropFilter: isScrolled ? 'blur(12px)' : 'none',
-        borderBottom: isScrolled ? `1px solid ${royalColors.gold}20` : 'none',
+        background: royalColors.white,
+        borderBottom: `1px solid ${isScrolled ? '#e5e5e5' : 'transparent'}`,
         transition: 'all 0.3s ease',
+        boxShadow: isScrolled ? '0 2px 4px rgba(0,0,0,0.05)' : 'none',
       }}
     >
       <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '4.5rem' }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
             <div style={{
-              width: '2.5rem',
-              height: '2.5rem',
-              background: `linear-gradient(135deg, ${royalColors.gold}, ${royalColors.gold}cc)`,
+              width: '2.25rem',
+              height: '2.25rem',
+              background: royalColors.black,
               borderRadius: '0.5rem',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              transition: 'transform 0.3s ease',
             }}>
               <span style={{ color: royalColors.white, fontWeight: 'bold', fontSize: '1.25rem' }}>H</span>
             </div>
-            <span style={{ fontWeight: 'bold', fontSize: '1.25rem', color: royalColors.black }}>Hub4Estate</span>
+            <span style={{ fontWeight: '600', fontSize: '1.25rem', color: royalColors.black }}>Hub4Estate</span>
           </Link>
 
-          <div style={{ alignItems: 'center', gap: '0.5rem' }} className="desktop-nav">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '2rem' }} className="desktop-nav">
             {navLinks.map((link) => (
               <a
                 key={link.href}
                 href={link.href}
                 style={{
-                  padding: '0.5rem 1rem',
-                  borderRadius: '0.5rem',
                   color: royalColors.black,
                   textDecoration: 'none',
-                  transition: 'background 0.2s ease',
+                  fontSize: '0.95rem',
+                  fontWeight: '500',
+                  transition: 'color 0.2s ease',
                 }}
-                onMouseEnter={(e) => e.currentTarget.style.background = `${royalColors.gold}15`}
-                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                onMouseEnter={(e) => e.currentTarget.style.color = royalColors.gold}
+                onMouseLeave={(e) => e.currentTarget.style.color = royalColors.black}
               >
                 {link.label}
               </a>
             ))}
           </div>
 
-          <div style={{ alignItems: 'center', gap: '0.75rem' }} className="desktop-nav">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }} className="desktop-nav">
             <Link href="/sign-in" style={{ textDecoration: 'none' }}>
               <button style={{
-                padding: '0.5rem 1.5rem',
+                padding: '0.625rem 1.25rem',
                 border: 'none',
                 background: 'transparent',
                 color: royalColors.black,
@@ -97,33 +94,31 @@ export default function Navigation() {
                 cursor: 'pointer',
                 fontSize: '0.95rem',
                 fontWeight: '500',
-                transition: 'background 0.2s ease',
+                transition: 'color 0.2s ease',
               }}
-              onMouseEnter={(e) => e.currentTarget.style.background = `${royalColors.gold}15`}
-              onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+              onMouseEnter={(e) => e.currentTarget.style.color = royalColors.gold}
+              onMouseLeave={(e) => e.currentTarget.style.color = royalColors.black}
               >
                 Sign In
               </button>
             </Link>
             <Link href="/sign-up" style={{ textDecoration: 'none' }}>
               <button style={{
-                padding: '0.5rem 1.5rem',
+                padding: '0.625rem 1.5rem',
                 border: 'none',
-                background: royalColors.gold,
+                background: royalColors.black,
                 color: royalColors.white,
                 borderRadius: '0.5rem',
                 cursor: 'pointer',
                 fontSize: '0.95rem',
                 fontWeight: '500',
-                transition: 'all 0.2s ease',
+                transition: 'transform 0.2s ease',
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = 'translateY(-2px)';
-                e.currentTarget.style.boxShadow = '0 4px 12px rgba(184, 134, 11, 0.3)';
+                e.currentTarget.style.transform = 'scale(1.05)';
               }}
               onMouseLeave={(e) => {
-                e.currentTarget.style.transform = 'translateY(0)';
-                e.currentTarget.style.boxShadow = 'none';
+                e.currentTarget.style.transform = 'scale(1)';
               }}
               >
                 Get Started
@@ -134,7 +129,7 @@ export default function Navigation() {
           <button
             onClick={() => setIsOpen(!isOpen)}
             style={{
-              display: 'block',
+              display: 'none',
               padding: '0.5rem',
               borderRadius: '0.5rem',
               background: 'transparent',
@@ -149,101 +144,98 @@ export default function Navigation() {
         </div>
       </div>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            style={{
-              borderTop: `1px solid ${royalColors.gold}20`,
-              background: royalColors.beige,
-            }}
-            className="mobile-menu"
-          >
-            <div style={{ padding: '1rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              {navLinks.map((link) => (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  style={{
-                    padding: '0.75rem 1rem',
-                    borderRadius: '0.5rem',
-                    color: royalColors.black,
-                    textDecoration: 'none',
-                    transition: 'background 0.2s ease',
-                  }}
-                  onClick={() => setIsOpen(false)}
-                  onMouseEnter={(e) => e.currentTarget.style.background = `${royalColors.gold}15`}
-                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                >
-                  {link.label}
-                </a>
-              ))}
-              <div style={{ 
-                paddingTop: '1rem', 
-                marginTop: '0.5rem',
-                borderTop: `1px solid ${royalColors.gold}20`,
-                display: 'flex', 
-                flexDirection: 'column', 
-                gap: '0.5rem' 
-              }}>
-                <Link href="/sign-in" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
-                  <button style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    border: 'none',
-                    background: 'transparent',
-                    color: royalColors.black,
-                    borderRadius: '0.5rem',
-                    cursor: 'pointer',
-                    fontSize: '0.95rem',
-                    fontWeight: '500',
-                    textAlign: 'left',
-                  }}>
-                    Sign In
-                  </button>
-                </Link>
-                <Link href="/sign-up" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
-                  <button style={{
-                    width: '100%',
-                    padding: '0.75rem',
-                    border: 'none',
-                    background: royalColors.gold,
-                    color: royalColors.white,
-                    borderRadius: '0.5rem',
-                    cursor: 'pointer',
-                    fontSize: '0.95rem',
-                    fontWeight: '500',
-                  }}>
-                    Get Started
-                  </button>
-                </Link>
-              </div>
+      {isOpen && (
+        <div
+          style={{
+            borderTop: '1px solid #e5e5e5',
+            background: royalColors.white,
+          }}
+          className="mobile-menu"
+        >
+          <div style={{ padding: '1rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {navLinks.map((link) => (
+              <a
+                key={link.href}
+                href={link.href}
+                style={{
+                  padding: '0.75rem 1rem',
+                  borderRadius: '0.5rem',
+                  color: royalColors.black,
+                  textDecoration: 'none',
+                  fontSize: '0.95rem',
+                  fontWeight: '500',
+                  transition: 'background 0.2s ease',
+                }}
+                onClick={() => setIsOpen(false)}
+              >
+                {link.label}
+              </a>
+            ))}
+            <div style={{ 
+              paddingTop: '1rem', 
+              marginTop: '0.5rem',
+              borderTop: '1px solid #e5e5e5',
+              display: 'flex', 
+              flexDirection: 'column', 
+              gap: '0.5rem' 
+            }}>
+              <Link href="/sign-in" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
+                <button style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: '1px solid #e5e5e5',
+                  background: 'transparent',
+                  color: royalColors.black,
+                  borderRadius: '0.5rem',
+                  cursor: 'pointer',
+                  fontSize: '0.95rem',
+                  fontWeight: '500',
+                }}>
+                  Sign In
+                </button>
+              </Link>
+              <Link href="/sign-up" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
+                <button style={{
+                  width: '100%',
+                  padding: '0.75rem',
+                  border: 'none',
+                  background: royalColors.black,
+                  color: royalColors.white,
+                  borderRadius: '0.5rem',
+                  cursor: 'pointer',
+                  fontSize: '0.95rem',
+                  fontWeight: '500',
+                }}>
+                  Get Started
+                </button>
+              </Link>
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+          </div>
+        </div>
+      )}
 
       <style jsx>{`
         .desktop-nav {
-          display: none;
+          display: flex;
         }
         .mobile-menu-btn {
-          display: block;
+          display: none !important;
         }
-        @media (min-width: 768px) {
+        .mobile-menu {
+          display: none;
+        }
+        @media (max-width: 768px) {
           .desktop-nav {
-            display: flex;
+            display: none !important;
           }
           .mobile-menu-btn {
-            display: none;
+            display: block !important;
           }
           .mobile-menu {
-            display: none;
+            display: block;
           }
         }
       `}</style>
-    </motion.nav>
+    </nav>
   );
 }

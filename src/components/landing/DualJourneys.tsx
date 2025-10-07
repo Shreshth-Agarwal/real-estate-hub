@@ -1,156 +1,295 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, ShoppingBag, Store, CheckCircle2, Sparkles } from "lucide-react";
-import Image from "next/image";
+import { ArrowRight, Search, FileText, CheckSquare, Users, Store, Shield, TrendingUp, Award } from "lucide-react";
+import { useRouter } from "next/navigation";
+
+const royalColors = {
+  beige: '#F6F1E6',
+  black: '#0B0B0B',
+  gold: '#D4AF37',
+  white: '#FFFFFF',
+  blue: '#2563EB',
+  green: '#059669',
+};
 
 export default function DualJourneys() {
-  const consumerFeatures = [
-    "Search 10,000+ verified products",
-    "Get instant quotes from multiple suppliers",
-    "Manage projects and track budgets",
-    "Access policy guidance via AI",
+  const router = useRouter();
+
+  const consumerSteps = [
+    { icon: Search, label: "Search catalogs & professionals" },
+    { icon: FileText, label: "Get instant quotes" },
+    { icon: CheckSquare, label: "Compare & choose the best" },
+    { icon: Users, label: "Collaborate in project workspace" },
   ];
 
-  const providerFeatures = [
-    "Reach 50,000+ active buyers",
-    "List unlimited products for free",
-    "Respond to RFQs instantly",
-    "Build trust with KYC verification",
+  const providerSteps = [
+    { icon: Store, label: "List your catalog" },
+    { icon: Shield, label: "Get KYC verified" },
+    { icon: TrendingUp, label: "Receive qualified RFQs" },
+    { icon: Award, label: "Build trust & grow revenue" },
   ];
 
   return (
-    <section className="py-20 bg-muted/30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-16"
-        >
-          <h2 className="text-3xl md:text-5xl font-bold mb-4">
-            Built for Everyone in Real Estate
+    <section 
+      style={{
+        padding: '5rem 0',
+        background: royalColors.beige,
+        position: 'relative',
+      }}
+    >
+      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.5rem' }}>
+        {/* Section Header */}
+        <div style={{ textAlign: 'center', marginBottom: '3rem' }}>
+          <h2 style={{
+            fontSize: 'clamp(2rem, 5vw, 3rem)',
+            fontWeight: 'bold',
+            marginBottom: '1rem',
+            color: royalColors.black,
+          }}>
+            Built for every journey
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          <p style={{
+            fontSize: '1.25rem',
+            color: `${royalColors.black}cc`,
+            maxWidth: '700px',
+            margin: '0 auto',
+            lineHeight: '1.6',
+          }}>
             Whether you're building your dream home or growing your business
           </p>
-        </motion.div>
+        </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Consumer Card */}
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            whileHover={{ y: -8 }}
-            transition={{ duration: 0.3 }}
-            className="group relative"
-          >
-            <div className="relative h-full bg-gradient-to-br from-blue-500/10 to-purple-500/10 rounded-2xl border border-border overflow-hidden">
-              {/* Background Image */}
-              <div className="absolute inset-0 opacity-20">
-                <Image
-                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/fbe5faa4-02cd-49d9-8d16-5d47ebf781d0/generated_images/modern-construction-project-workspace----ece22ce3-20251003132620.jpg"
-                  alt="Consumer Journey"
-                  fill
-                  className="object-cover"
-                />
+        {/* Journey Cards */}
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: '2rem',
+          maxWidth: '1100px',
+          margin: '0 auto',
+        }}>
+          {/* Consumer Journey Card */}
+          <div style={{
+            background: royalColors.white,
+            borderRadius: '1rem',
+            padding: '2.5rem',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+            border: `2px solid transparent`,
+            transition: 'all 0.3s ease',
+            cursor: 'pointer',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-8px)';
+            e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.12)';
+            e.currentTarget.style.borderColor = royalColors.blue;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.08)';
+            e.currentTarget.style.borderColor = 'transparent';
+          }}
+          onClick={() => router.push('/sign-up')}>
+            {/* Icon and Title */}
+            <div style={{ marginBottom: '2rem' }}>
+              <div style={{
+                width: '4rem',
+                height: '4rem',
+                borderRadius: '1rem',
+                background: `linear-gradient(135deg, ${royalColors.blue}15, ${royalColors.blue}25)`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '1rem',
+              }}>
+                <Search style={{ width: '2rem', height: '2rem', color: royalColors.blue }} />
               </div>
-
-              <div className="relative p-8 md:p-10 space-y-6">
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-full text-sm font-medium">
-                  <ShoppingBag className="w-4 h-4" />
-                  For Consumers
-                </div>
-
-                <h3 className="text-3xl font-bold">
-                  Find, Compare, and Build with Confidence
-                </h3>
-
-                <p className="text-muted-foreground">
-                  Access India's largest catalog of verified construction materials and professionals. 
-                  Get competitive quotes and manage your entire project in one place.
-                </p>
-
-                <ul className="space-y-3">
-                  {consumerFeatures.map((feature) => (
-                    <li key={feature} className="flex items-start gap-3">
-                      <CheckCircle2 className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Button 
-                  size="lg" 
-                  className="w-full bg-blue-600 hover:bg-blue-700 group-hover:shadow-lg transition-all"
-                >
-                  Start as Consumer <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Button>
-
-                {/* Decorative Element */}
-                <div className="absolute -top-10 -right-10 w-32 h-32 bg-blue-500/20 rounded-full blur-3xl" />
-              </div>
+              <h3 style={{
+                fontSize: '1.75rem',
+                fontWeight: 'bold',
+                color: royalColors.black,
+                marginBottom: '0.5rem',
+              }}>
+                Consumer Path
+              </h3>
+              <p style={{
+                fontSize: '1rem',
+                color: `${royalColors.black}99`,
+                lineHeight: '1.5',
+              }}>
+                Find materials, get quotes, and manage your construction project
+              </p>
             </div>
-          </motion.div>
 
-          {/* Provider Card */}
-          <motion.div
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            whileHover={{ y: -8 }}
-            transition={{ duration: 0.3 }}
-            className="group relative"
-          >
-            <div className="relative h-full bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-2xl border border-border overflow-hidden">
-              {/* Background Image */}
-              <div className="absolute inset-0 opacity-20">
-                <Image
-                  src="https://slelguoygbfzlpylpxfs.supabase.co/storage/v1/object/public/project-uploads/fbe5faa4-02cd-49d9-8d16-5d47ebf781d0/generated_images/real-estate-professional-provider-networ-ff722369-20251003132612.jpg"
-                  alt="Provider Journey"
-                  fill
-                  className="object-cover"
-                />
-              </div>
-
-              <div className="relative p-8 md:p-10 space-y-6">
-                <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-500/10 text-green-600 dark:text-green-400 rounded-full text-sm font-medium">
-                  <Store className="w-4 h-4" />
-                  For Providers
+            {/* Steps */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
+              {consumerSteps.map((step, index) => (
+                <div key={index} style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                }}>
+                  <div style={{
+                    width: '2rem',
+                    height: '2rem',
+                    borderRadius: '0.5rem',
+                    background: royalColors.beige,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}>
+                    <step.icon style={{ width: '1rem', height: '1rem', color: royalColors.blue }} />
+                  </div>
+                  <span style={{
+                    fontSize: '0.95rem',
+                    color: royalColors.black,
+                  }}>
+                    {step.label}
+                  </span>
                 </div>
-
-                <h3 className="text-3xl font-bold">
-                  Grow Your Business with Qualified Leads
-                </h3>
-
-                <p className="text-muted-foreground">
-                  Connect with verified buyers actively looking for materials and services. 
-                  Showcase your products and build trust with transparent ratings.
-                </p>
-
-                <ul className="space-y-3">
-                  {providerFeatures.map((feature) => (
-                    <li key={feature} className="flex items-start gap-3">
-                      <Sparkles className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <Button 
-                  size="lg" 
-                  className="w-full bg-green-600 hover:bg-green-700 group-hover:shadow-lg transition-all"
-                >
-                  List Your Business <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </Button>
-
-                {/* Decorative Element */}
-                <div className="absolute -top-10 -right-10 w-32 h-32 bg-green-500/20 rounded-full blur-3xl" />
-              </div>
+              ))}
             </div>
-          </motion.div>
+
+            {/* CTA Button */}
+            <button
+              style={{
+                width: '100%',
+                padding: '0.875rem',
+                background: royalColors.blue,
+                color: royalColors.white,
+                border: 'none',
+                borderRadius: '0.5rem',
+                fontSize: '1rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem',
+                transition: 'background 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#1d4ed8';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = royalColors.blue;
+              }}
+            >
+              Start as Consumer
+              <ArrowRight style={{ width: '1.25rem', height: '1.25rem' }} />
+            </button>
+          </div>
+
+          {/* Provider Journey Card */}
+          <div style={{
+            background: royalColors.white,
+            borderRadius: '1rem',
+            padding: '2.5rem',
+            boxShadow: '0 4px 16px rgba(0,0,0,0.08)',
+            border: `2px solid transparent`,
+            transition: 'all 0.3s ease',
+            cursor: 'pointer',
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.transform = 'translateY(-8px)';
+            e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.12)';
+            e.currentTarget.style.borderColor = royalColors.green;
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.transform = 'translateY(0)';
+            e.currentTarget.style.boxShadow = '0 4px 16px rgba(0,0,0,0.08)';
+            e.currentTarget.style.borderColor = 'transparent';
+          }}
+          onClick={() => router.push('/provider/setup')}>
+            {/* Icon and Title */}
+            <div style={{ marginBottom: '2rem' }}>
+              <div style={{
+                width: '4rem',
+                height: '4rem',
+                borderRadius: '1rem',
+                background: `linear-gradient(135deg, ${royalColors.green}15, ${royalColors.green}25)`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                marginBottom: '1rem',
+              }}>
+                <Store style={{ width: '2rem', height: '2rem', color: royalColors.green }} />
+              </div>
+              <h3 style={{
+                fontSize: '1.75rem',
+                fontWeight: 'bold',
+                color: royalColors.black,
+                marginBottom: '0.5rem',
+              }}>
+                Provider Path
+              </h3>
+              <p style={{
+                fontSize: '1rem',
+                color: `${royalColors.black}99`,
+                lineHeight: '1.5',
+              }}>
+                List products, get verified, and grow your business
+              </p>
+            </div>
+
+            {/* Steps */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '2rem' }}>
+              {providerSteps.map((step, index) => (
+                <div key={index} style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '0.75rem',
+                }}>
+                  <div style={{
+                    width: '2rem',
+                    height: '2rem',
+                    borderRadius: '0.5rem',
+                    background: royalColors.beige,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}>
+                    <step.icon style={{ width: '1rem', height: '1rem', color: royalColors.green }} />
+                  </div>
+                  <span style={{
+                    fontSize: '0.95rem',
+                    color: royalColors.black,
+                  }}>
+                    {step.label}
+                  </span>
+                </div>
+              ))}
+            </div>
+
+            {/* CTA Button */}
+            <button
+              style={{
+                width: '100%',
+                padding: '0.875rem',
+                background: royalColors.green,
+                color: royalColors.white,
+                border: 'none',
+                borderRadius: '0.5rem',
+                fontSize: '1rem',
+                fontWeight: '600',
+                cursor: 'pointer',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem',
+                transition: 'background 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = '#047857';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = royalColors.green;
+              }}
+            >
+              List Your Business
+              <ArrowRight style={{ width: '1.25rem', height: '1.25rem' }} />
+            </button>
+          </div>
         </div>
       </div>
     </section>
