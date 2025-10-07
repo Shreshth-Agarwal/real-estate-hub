@@ -10,6 +10,9 @@ import { useEffect, useState, useRef } from "react";
 export default function Hero() {
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
+  const [userType, setUserType] = useState<string | null>(null);
+  
+  const session = null;
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"]
@@ -34,6 +37,32 @@ export default function Hero() {
         repeat: Infinity,
         ease: "easeInOut"
       }
+    }
+  };
+
+  const handleGetStarted = () => {
+    if (session?.user) {
+      if (userType === "provider") {
+        router.push("/provider/dashboard");
+      } else if (userType === "admin") {
+        router.push("/admin");
+      } else {
+        router.push("/dashboard");
+      }
+    } else {
+      router.push("/sign-up");
+    }
+  };
+
+  const handleListBusiness = () => {
+    if (session?.user) {
+      if (userType === "provider") {
+        router.push("/provider/dashboard");
+      } else {
+        router.push("/provider/setup");
+      }
+    } else {
+      router.push("/sign-up?role=provider");
     }
   };
 
@@ -144,7 +173,7 @@ export default function Hero() {
             >
               <Button
                 size="lg"
-                onClick={() => router.push("/sign-up")}
+                onClick={handleGetStarted}
                 className="group relative overflow-hidden w-full sm:w-auto text-lg px-10 py-7 bg-gradient-to-r from-primary via-primary/90 to-purple-600 hover:shadow-2xl hover:shadow-primary/50 transition-all duration-300"
               >
                 <span className="relative z-10 flex items-center">
@@ -161,7 +190,7 @@ export default function Hero() {
               <Button
                 size="lg"
                 variant="outline"
-                onClick={() => router.push("/sign-up?role=provider")}
+                onClick={handleListBusiness}
                 className="w-full sm:w-auto text-lg px-10 py-7 border-2 border-primary/30 hover:bg-primary/10 hover:border-primary/60 transition-all duration-300"
               >
                 <Store className="mr-2 w-5 h-5" />
