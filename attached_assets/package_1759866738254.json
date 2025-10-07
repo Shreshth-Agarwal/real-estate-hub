@@ -1,0 +1,35 @@
+{
+    "name": "hub4estate-monorepo",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+        "dev": "turbo dev",
+        "build": "turbo build",
+        "lint": "turbo lint",
+        "typecheck": "turbo typecheck",
+        "test": "turbo test",
+        "clean": "turbo clean",
+        "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    },
+    "devDependencies": {
+        "@eslint/eslintrc": "^3.3.1",
+        "@tailwindcss/postcss": "^4",
+        "@types/node": "^20",
+        "@types/react": "^19",
+        "@types/react-dom": "^19",
+        "@types/react-syntax-highlighter": "^15.5.13",
+        "@types/three": "^0.178.0",
+        "eslint": "^9.35.0",
+        "eslint-config-next": "^15.5.3",
+        "prettier": "^3.4.2",
+        "tailwindcss": "^4",
+        "turbo": "^2.3.3",
+        "tw-animate-css": "^1.3.8",
+        "typescript": "^5"
+    },
+    "packageManager": "pnpm@9.15.4",
+    "engines": {
+        "node": ">=18.0.0",
+        "pnpm": ">=9.0.0"
+    }
+}
