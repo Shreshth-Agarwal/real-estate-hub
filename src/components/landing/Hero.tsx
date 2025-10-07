@@ -1,333 +1,384 @@
 "use client";
 
-import { motion, useScroll, useTransform } from "framer-motion";
-import { Button } from "@/components/ui/button";
-import { ArrowRight, Store, Sparkles, Zap, Shield, TrendingUp } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useInView } from "react-intersection-observer";
-import { useEffect, useState, useRef } from "react";
+import { motion, useScroll, useTransform, useInView } from "framer-motion";
+import { ArrowRight, Sparkles } from "lucide-react";
+import { useRef } from "react";
+
+const royalColors = {
+  beige: '#F6F1E6',
+  black: '#0B0B0B',
+  gold: '#B8860B',
+  white: '#FFFFFF',
+};
 
 export default function Hero() {
   const router = useRouter();
   const containerRef = useRef<HTMLDivElement>(null);
-  const [userType, setUserType] = useState<string | null>(null);
-  
-  const session: { user?: any } | null = null;
+  const contentRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(contentRef, { once: true, amount: 0.3 });
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start start", "end start"]
+    offset: ["start start", "end start"],
   });
 
-  const y1 = useTransform(scrollYProgress, [0, 1], [0, -100]);
-  const y2 = useTransform(scrollYProgress, [0, 1], [0, -200]);
-  const y3 = useTransform(scrollYProgress, [0, 1], [0, -50]);
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.95]);
+  const y = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+  const opacity = useTransform(scrollYProgress, [0, 0.5, 1], [1, 0.8, 0.3]);
 
-  const [ref, inView] = useInView({
-    threshold: 0.1,
-    triggerOnce: false,
-  });
-
-  const floatingAnimation = {
-    y: [0, -20, 0],
-    transition: {
-      duration: 3,
-      repeat: Infinity,
-      ease: "easeInOut"
-    }
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.15,
+        delayChildren: 0.2,
+      },
+    },
   };
 
-  const handleGetStarted = () => {
-    if (session?.user) {
-      if (userType === "provider") {
-        router.push("/provider/dashboard");
-      } else if (userType === "admin") {
-        router.push("/admin");
-      } else {
-        router.push("/dashboard");
-      }
-    } else {
-      router.push("/sign-up");
-    }
+  const itemVariants = {
+    hidden: { opacity: 0, y: 30 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.8,
+        ease: [0.25, 0.4, 0.25, 1] as const,
+      },
+    },
   };
 
-  const handleListBusiness = () => {
-    if (session?.user) {
-      if (userType === "provider") {
-        router.push("/provider/dashboard");
-      } else {
-        router.push("/provider/setup");
-      }
-    } else {
-      router.push("/sign-up?role=provider");
-    }
+  const orbVariants = {
+    animate: (custom: number) => ({
+      y: [0, -30, 0],
+      x: [0, custom * 15, 0],
+      scale: [1, 1.1, 1],
+      opacity: [0.4, 0.6, 0.4],
+      transition: {
+        duration: 6 + custom * 0.5,
+        repeat: Infinity,
+        ease: "easeInOut" as const,
+      },
+    }),
   };
 
   return (
     <section 
       ref={containerRef}
-      className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16"
+      style={{
+        position: 'relative',
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+        paddingTop: '5rem',
+        background: `linear-gradient(135deg, ${royalColors.beige} 0%, #E8DCC8 100%)`,
+      }}
     >
-      {/* Animated Background */}
+      {/* Floating Animated Orbs */}
+      <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', pointerEvents: 'none' }}>
+        {[...Array(8)].map((_, i) => (
+          <motion.div
+            key={i}
+            custom={i}
+            variants={orbVariants}
+            animate="animate"
+            style={{
+              position: 'absolute',
+              left: `${10 + i * 12}%`,
+              top: `${15 + i * 10}%`,
+              width: `${80 + i * 20}px`,
+              height: `${80 + i * 20}px`,
+              borderRadius: '50%',
+              background: i % 2 === 0 
+                ? `radial-gradient(circle, ${royalColors.gold}30, ${royalColors.gold}10)` 
+                : `radial-gradient(circle, ${royalColors.black}20, ${royalColors.black}05)`,
+              filter: 'blur(40px)',
+              opacity: 0.4,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Parallax Background Shapes */}
       <motion.div 
-        className="absolute inset-0 bg-gradient-to-b from-background via-primary/5 to-background"
-        style={{ opacity }}
-      />
-      
-      {/* Floating Orbs */}
-      <motion.div
-        style={{ y: y2 }}
-        className="absolute top-20 right-10 w-64 h-64 bg-gradient-to-br from-primary/30 to-purple-500/30 rounded-full blur-3xl"
-        animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.3, 0.5, 0.3],
+        style={{ 
+          position: 'absolute',
+          inset: 0,
+          y,
+          opacity,
         }}
-        transition={{
-          duration: 5,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
-      
-      <motion.div
-        style={{ y: y1 }}
-        className="absolute bottom-20 left-10 w-96 h-96 bg-gradient-to-br from-pink-500/20 to-orange-500/20 rounded-full blur-3xl"
-        animate={{
-          scale: [1, 1.1, 1],
-          opacity: [0.2, 0.4, 0.2],
-        }}
-        transition={{
-          duration: 7,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-      />
+      >
+        <div style={{ 
+          position: 'absolute',
+          top: '10%',
+          right: '5%',
+          width: '500px',
+          height: '500px',
+          borderRadius: '50%',
+          background: `radial-gradient(circle, ${royalColors.gold}15, transparent 70%)`,
+          filter: 'blur(60px)',
+        }} />
+        <div style={{ 
+          position: 'absolute',
+          bottom: '20%',
+          left: '10%',
+          width: '400px',
+          height: '400px',
+          borderRadius: '50%',
+          background: `radial-gradient(circle, ${royalColors.black}10, transparent 70%)`,
+          filter: 'blur(80px)',
+        }} />
+      </motion.div>
 
       <motion.div
-        style={{ y: y3, scale }}
-        className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-32 z-10"
-        ref={ref}
+        ref={contentRef}
+        variants={containerVariants}
+        initial="hidden"
+        animate={isInView ? "visible" : "hidden"}
+        style={{ 
+          position: 'relative',
+          maxWidth: '1280px',
+          margin: '0 auto',
+          padding: '5rem 1.5rem',
+          zIndex: 10,
+        }}
       >
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left Content */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem', alignItems: 'center', textAlign: 'center' }}>
           <motion.div
-            initial={{ opacity: 0, x: -60 }}
-            animate={inView ? { opacity: 1, x: 0 } : {}}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="space-y-8"
+            variants={itemVariants}
+            whileHover={{ scale: 1.05 }}
+            transition={{ duration: 0.3 }}
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '0.5rem',
+              padding: '0.625rem 1.25rem',
+              background: `${royalColors.gold}15`,
+              border: `1px solid ${royalColors.gold}40`,
+              borderRadius: '9999px',
+              fontSize: '0.875rem',
+              fontWeight: '500',
+            }}
           >
             <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.2, duration: 0.6 }}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-primary/15 to-purple-500/15 border border-primary/20 rounded-full text-sm font-medium backdrop-blur-sm"
+              animate={{ rotate: [0, 10, -10, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
             >
-              <Sparkles className="w-4 h-4 text-primary animate-pulse" />
-              <span className="bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent font-semibold">
-                India's Most Trusted Real Estate Platform
-              </span>
+              <Sparkles style={{ width: '1rem', height: '1rem', color: royalColors.gold }} />
             </motion.div>
-
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.3, duration: 0.6 }}
-              className="text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-[1.1] tracking-tight"
-            >
-              One place for{" "}
-              <motion.span
-                className="block bg-gradient-to-r from-primary via-purple-500 to-pink-500 bg-clip-text text-transparent"
-                animate={{
-                  backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
-                }}
-                transition={{
-                  duration: 5,
-                  repeat: Infinity,
-                  ease: "linear"
-                }}
-                style={{
-                  backgroundSize: "200% 200%"
-                }}
-              >
-                every real-estate need
-              </motion.span>
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 30 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.4, duration: 0.6 }}
-              className="text-xl md:text-2xl text-muted-foreground/90 max-w-2xl leading-relaxed"
-            >
-              Connect with verified professionals, browse searchable catalogs, get instant quotes, and manage projects — all powered by AI
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.5, duration: 0.6 }}
-              className="flex flex-col sm:flex-row gap-4 pt-4"
-            >
-              <Button
-                size="lg"
-                onClick={handleGetStarted}
-                className="group relative overflow-hidden w-full sm:w-auto text-lg px-10 py-7 bg-gradient-to-r from-primary via-primary/90 to-purple-600 hover:shadow-2xl hover:shadow-primary/50 transition-all duration-300"
-              >
-                <span className="relative z-10 flex items-center">
-                  Get Started Free
-                  <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </span>
-                <motion.div
-                  className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600"
-                  initial={{ x: "-100%" }}
-                  whileHover={{ x: 0 }}
-                  transition={{ duration: 0.3 }}
-                />
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                onClick={handleListBusiness}
-                className="w-full sm:w-auto text-lg px-10 py-7 border-2 border-primary/30 hover:bg-primary/10 hover:border-primary/60 transition-all duration-300"
-              >
-                <Store className="mr-2 w-5 h-5" />
-                List Your Business
-              </Button>
-            </motion.div>
-
-            {/* Stats */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={inView ? { opacity: 1, y: 0 } : {}}
-              transition={{ delay: 0.6, duration: 0.6 }}
-              className="flex items-center gap-8 pt-8"
-            >
-              {[
-                { value: "50K+", label: "Active Users", icon: TrendingUp },
-                { value: "10K+", label: "Products", icon: Zap },
-                { value: "98%", label: "Trust Score", icon: Shield },
-              ].map((stat, i) => (
-                <motion.div
-                  key={i}
-                  initial={{ scale: 0 }}
-                  animate={inView ? { scale: 1 } : {}}
-                  transition={{ delay: 0.7 + i * 0.1, type: "spring", stiffness: 200 }}
-                  className="group"
-                >
-                  <div className="flex items-center gap-2 mb-1">
-                    <stat.icon className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
-                    <div className="text-3xl md:text-4xl font-bold bg-gradient-to-br from-foreground to-foreground/70 bg-clip-text text-transparent">
-                      {stat.value}
-                    </div>
-                  </div>
-                  <div className="text-sm text-muted-foreground">{stat.label}</div>
-                </motion.div>
-              ))}
-            </motion.div>
+            <span style={{ color: royalColors.gold, fontWeight: '600' }}>
+              India's Most Trusted Real Estate Platform
+            </span>
           </motion.div>
 
-          {/* Right Visual - Floating Cards */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={inView ? { opacity: 1, scale: 1 } : {}}
-            transition={{ duration: 0.8, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-            className="relative hidden lg:block"
+          <motion.h1
+            variants={itemVariants}
+            style={{
+              fontSize: 'clamp(2.5rem, 8vw, 5rem)',
+              fontWeight: 'bold',
+              lineHeight: '1.1',
+              letterSpacing: '-0.02em',
+              color: royalColors.black,
+            }}
           >
-            <div className="relative w-full h-[700px]">
-              {/* Main catalog card */}
+            One place for{" "}
+            <motion.span 
+              style={{
+                display: 'block',
+                background: `linear-gradient(135deg, ${royalColors.gold}, ${royalColors.black})`,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+              }}
+              animate={{ 
+                backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+              }}
+              transition={{ 
+                duration: 5, 
+                repeat: Infinity, 
+                ease: "linear" 
+              }}
+            >
+              every real-estate need
+            </motion.span>
+          </motion.h1>
+
+          <motion.p
+            variants={itemVariants}
+            style={{
+              fontSize: 'clamp(1.125rem, 3vw, 1.5rem)',
+              color: `${royalColors.black}cc`,
+              maxWidth: '42rem',
+              lineHeight: '1.6',
+            }}
+          >
+            Connect with verified professionals, browse searchable catalogs, get instant quotes, and manage projects — all powered by AI
+          </motion.p>
+
+          <motion.div
+            variants={itemVariants}
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              gap: '1rem',
+              paddingTop: '1rem',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+            }}
+          >
+            <motion.button
+              onClick={() => router.push('/sign-up')}
+              whileHover={{ scale: 1.05, boxShadow: `0 10px 30px ${royalColors.gold}40` }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              style={{
+                position: 'relative',
+                padding: '1rem 2.5rem',
+                fontSize: '1.125rem',
+                fontWeight: '500',
+                color: royalColors.white,
+                background: royalColors.gold,
+                border: 'none',
+                borderRadius: '0.5rem',
+                cursor: 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                gap: '0.5rem',
+              }}
+            >
+              <span>Get Started Free</span>
               <motion.div
-                style={{ y: y1 }}
-                animate={floatingAnimation}
-                className="absolute top-0 right-0 w-80 bg-gradient-to-br from-card to-card/50 backdrop-blur-xl border border-border/50 rounded-3xl shadow-2xl p-6 space-y-4 hover:shadow-primary/20 transition-all duration-500"
-                whileHover={{ scale: 1.05, rotateZ: 2 }}
+                animate={{ x: [0, 5, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary via-purple-500 to-pink-500 flex items-center justify-center">
-                    <Sparkles className="w-6 h-6 text-white" />
-                  </div>
-                  <div>
-                    <div className="font-bold text-lg">Premium Tiles</div>
-                    <div className="text-sm text-primary font-semibold">₹45/sqft</div>
-                  </div>
-                </div>
+                <ArrowRight size={20} />
+              </motion.div>
+            </motion.button>
+            <motion.button
+              onClick={() => {
+                const element = document.getElementById('how-it-works');
+                element?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              whileHover={{ 
+                scale: 1.05, 
+                borderColor: royalColors.gold,
+                backgroundColor: `${royalColors.gold}10`,
+              }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              style={{
+                padding: '1rem 2.5rem',
+                fontSize: '1.125rem',
+                fontWeight: '500',
+                color: royalColors.black,
+                background: 'transparent',
+                border: `2px solid ${royalColors.gold}60`,
+                borderRadius: '0.5rem',
+                cursor: 'pointer',
+              }}
+            >
+              Learn More
+            </motion.button>
+          </motion.div>
+
+          <motion.div
+            variants={itemVariants}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '2rem',
+              paddingTop: '2rem',
+              flexWrap: 'wrap',
+              justifyContent: 'center',
+            }}
+          >
+            {[
+              { value: "50K+", label: "Active Users" },
+              { value: "10K+", label: "Products" },
+              { value: "98%", label: "Trust Score" },
+            ].map((stat, i) => (
+              <motion.div 
+                key={i}
+                initial={{ opacity: 0, scale: 0.5 }}
+                animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.5 }}
+                transition={{ 
+                  delay: 0.8 + i * 0.1, 
+                  duration: 0.5,
+                  ease: [0.25, 0.4, 0.25, 1],
+                }}
+                whileHover={{ scale: 1.1, y: -5 }}
+              >
                 <motion.div 
-                  className="h-40 bg-gradient-to-br from-primary/20 to-purple-500/20 rounded-2xl"
-                  animate={{
-                    scale: [1, 1.02, 1],
+                  style={{ 
+                    fontSize: 'clamp(2rem, 4vw, 2.5rem)', 
+                    fontWeight: 'bold', 
+                    color: royalColors.black,
+                    marginBottom: '0.25rem',
                   }}
-                  transition={{
-                    duration: 3,
-                    repeat: Infinity,
+                  animate={{ 
+                    textShadow: [
+                      `0 0 0px ${royalColors.gold}00`,
+                      `0 0 20px ${royalColors.gold}40`,
+                      `0 0 0px ${royalColors.gold}00`,
+                    ],
                   }}
-                />
-                <Button className="w-full text-base py-6 bg-gradient-to-r from-primary to-purple-600 hover:shadow-lg hover:shadow-primary/50 transition-all">
-                  Request Quote Instantly
-                </Button>
+                  transition={{ 
+                    duration: 3, 
+                    repeat: Infinity, 
+                    delay: i * 0.5 
+                  }}
+                >
+                  {stat.value}
+                </motion.div>
+                <div style={{ fontSize: '0.875rem', color: `${royalColors.black}80` }}>{stat.label}</div>
               </motion.div>
-
-              {/* Project budget card */}
-              <motion.div
-                style={{ y: y2 }}
-                animate={{ y: [0, 25, 0] }}
-                transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
-                className="absolute bottom-10 left-0 w-80 bg-gradient-to-br from-card to-card/50 backdrop-blur-xl border border-border/50 rounded-3xl shadow-2xl p-6 space-y-4 hover:shadow-purple-500/20 transition-all duration-500"
-                whileHover={{ scale: 1.05, rotateZ: -2 }}
-              >
-                <div className="flex items-center justify-between">
-                  <span className="font-bold text-lg">Project Budget</span>
-                  <span className="text-2xl font-bold bg-gradient-to-r from-primary to-purple-500 bg-clip-text text-transparent">
-                    ₹12.5L
-                  </span>
-                </div>
-                <div className="space-y-3">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground font-medium">Materials & Labor</span>
-                    <span className="font-semibold">68%</span>
-                  </div>
-                  <div className="w-full h-3 bg-muted rounded-full overflow-hidden">
-                    <motion.div 
-                      className="h-full bg-gradient-to-r from-primary via-purple-500 to-pink-500"
-                      initial={{ width: 0 }}
-                      animate={inView ? { width: "68%" } : {}}
-                      transition={{ duration: 1.5, delay: 1 }}
-                    />
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                  <Shield className="w-4 h-4 text-green-500" />
-                  <span>Escrow Protected</span>
-                </div>
-              </motion.div>
-
-              {/* Verified badge */}
-              <motion.div
-                animate={{ 
-                  rotate: [0, 8, 0, -8, 0],
-                  scale: [1, 1.1, 1],
-                }}
-                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-full shadow-xl shadow-green-500/50 text-base font-bold flex items-center gap-2"
-              >
-                <Shield className="w-5 h-5" />
-                KYC Verified
-              </motion.div>
-
-              {/* Floating AI assistant indicator */}
-              <motion.div
-                animate={{
-                  y: [0, -15, 0],
-                  opacity: [0.7, 1, 0.7],
-                }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute top-20 left-10 bg-gradient-to-r from-purple-500 to-pink-500 text-white px-5 py-2.5 rounded-full shadow-lg text-sm font-medium flex items-center gap-2"
-              >
-                <Sparkles className="w-4 h-4" />
-                AI Powered
-              </motion.div>
-            </div>
+            ))}
           </motion.div>
         </div>
+      </motion.div>
+
+      {/* Scroll Indicator */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.5, duration: 0.8 }}
+        style={{
+          position: 'absolute',
+          bottom: '2rem',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 10,
+        }}
+      >
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          style={{
+            width: '24px',
+            height: '40px',
+            border: `2px solid ${royalColors.gold}`,
+            borderRadius: '12px',
+            display: 'flex',
+            alignItems: 'flex-start',
+            justifyContent: 'center',
+            padding: '6px',
+          }}
+        >
+          <motion.div
+            animate={{ y: [0, 12, 0], opacity: [1, 0.3, 1] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            style={{
+              width: '4px',
+              height: '8px',
+              background: royalColors.gold,
+              borderRadius: '2px',
+            }}
+          />
+        </motion.div>
       </motion.div>
     </section>
   );

@@ -4,16 +4,18 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X, ChevronDown, LogOut } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useSession, authClient } from "@/lib/auth-client";
-import { toast } from "sonner";
+import { Menu, X } from "lucide-react";
+
+const royalColors = {
+  beige: '#F6F1E6',
+  black: '#0B0B0B',
+  gold: '#B8860B',
+  white: '#FFFFFF',
+};
 
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [knowledgeOpen, setKnowledgeOpen] = useState(false);
-  const { data: session, isPending, refetch } = useSession();
   const router = useRouter();
 
   useEffect(() => {
@@ -24,266 +26,224 @@ export default function Navigation() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleSignOut = async () => {
-    const { error } = await authClient.signOut();
-    if (error?.code) {
-      toast.error("Failed to sign out");
-    } else {
-      localStorage.removeItem("bearer_token");
-      refetch();
-      router.push("/");
-      toast.success("Signed out successfully");
-    }
-  };
-
-  // Get user type from users table (need to fetch from API)
-  const [userType, setUserType] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (session?.user?.id) {
-      // Fetch user type from API
-      fetch(`/api/users?id=${session.user.id}`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("bearer_token")}`,
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          if (data.userType) {
-            setUserType(data.userType);
-          }
-        })
-        .catch(() => {});
-    } else {
-      setUserType(null);
-    }
-  }, [session]);
-
-  // Public navigation links (always visible)
-  const publicLinks = [
-    { 
-      href: "/knowledge", 
-      label: "Knowledge Hub",
-      dropdown: [
-        { href: "/knowledge/blogs", label: "Blogs" },
-        { href: "/knowledge/city-insights", label: "City Insights" },
-      ]
-    },
+  const navLinks = [
+    { href: "#features", label: "Features" },
+    { href: "#how-it-works", label: "How It Works" },
     { href: "/pricing", label: "Pricing" },
   ];
-
-  // Protected navigation links (only visible when authenticated)
-  const protectedLinks = [
-    { href: "/catalogs", label: "Catalogs" },
-    { href: "/community", label: "Community" },
-    { href: "/projects", label: "Projects" },
-  ];
-
-  // Show protected links only if authenticated
-  const navLinks = session?.user 
-    ? [...publicLinks.slice(0, 1), ...protectedLinks, ...publicLinks.slice(1)] 
-    : publicLinks;
 
   return (
     <motion.nav
       initial={{ y: -100 }}
       animate={{ y: 0 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled
-          ? "bg-background/80 backdrop-blur-lg border-b border-border shadow-sm"
-          : "bg-transparent"
-      }`}
+      style={{
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 50,
+        background: isScrolled ? 'rgba(246, 241, 230, 0.95)' : 'transparent',
+        backdropFilter: isScrolled ? 'blur(12px)' : 'none',
+        borderBottom: isScrolled ? `1px solid ${royalColors.gold}20` : 'none',
+        transition: 'all 0.3s ease',
+      }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group">
-            <div className="w-10 h-10 bg-gradient-to-br from-primary to-primary/60 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
-              <span className="text-primary-foreground font-bold text-xl">H</span>
+      <div style={{ maxWidth: '1280px', margin: '0 auto', padding: '0 1.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '5rem' }}>
+          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', textDecoration: 'none' }}>
+            <div style={{
+              width: '2.5rem',
+              height: '2.5rem',
+              background: `linear-gradient(135deg, ${royalColors.gold}, ${royalColors.gold}cc)`,
+              borderRadius: '0.5rem',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'transform 0.3s ease',
+            }}>
+              <span style={{ color: royalColors.white, fontWeight: 'bold', fontSize: '1.25rem' }}>H</span>
             </div>
-            <span className="font-bold text-xl">Hub4Estate</span>
+            <span style={{ fontWeight: 'bold', fontSize: '1.25rem', color: royalColors.black }}>Hub4Estate</span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-1">
+          <div style={{ alignItems: 'center', gap: '0.5rem' }} className="desktop-nav">
             {navLinks.map((link) => (
-              link.dropdown ? (
-                <div 
-                  key={link.label}
-                  className="relative"
-                  onMouseEnter={() => setKnowledgeOpen(true)}
-                  onMouseLeave={() => setKnowledgeOpen(false)}
-                >
-                  <button className="px-4 py-2 rounded-lg hover:bg-accent transition-colors flex items-center gap-1">
-                    {link.label}
-                    <ChevronDown className="w-4 h-4" />
-                  </button>
-                  <AnimatePresence>
-                    {knowledgeOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: -10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -10 }}
-                        className="absolute top-full left-0 mt-1 bg-background border border-border rounded-lg shadow-lg overflow-hidden min-w-[200px]"
-                      >
-                        {link.dropdown.map((item) => (
-                          <Link
-                            key={item.href}
-                            href={item.href}
-                            className="block px-4 py-3 hover:bg-accent transition-colors"
-                          >
-                            {item.label}
-                          </Link>
-                        ))}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              ) : (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="px-4 py-2 rounded-lg hover:bg-accent transition-colors"
-                >
-                  {link.label}
-                </Link>
-              )
+              <a
+                key={link.href}
+                href={link.href}
+                style={{
+                  padding: '0.5rem 1rem',
+                  borderRadius: '0.5rem',
+                  color: royalColors.black,
+                  textDecoration: 'none',
+                  transition: 'background 0.2s ease',
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.background = `${royalColors.gold}15`}
+                onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+              >
+                {link.label}
+              </a>
             ))}
           </div>
 
-          {/* Auth Buttons */}
-          <div className="hidden md:flex items-center gap-3">
-            {session?.user ? (
-              <>
-                {/* Role-based dashboard link */}
-                {userType === "provider" ? (
-                  <Link href="/provider/dashboard">
-                    <Button>Provider Dashboard</Button>
-                  </Link>
-                ) : userType === "admin" ? (
-                  <Link href="/admin">
-                    <Button>Admin Panel</Button>
-                  </Link>
-                ) : (
-                  <Link href="/dashboard">
-                    <Button>Dashboard</Button>
-                  </Link>
-                )}
-                <Button variant="ghost" size="icon" onClick={handleSignOut}>
-                  <LogOut className="w-5 h-5" />
-                </Button>
-              </>
-            ) : (
-              <>
-                <Link href="/sign-in">
-                  <Button variant="ghost">Sign In</Button>
-                </Link>
-                <Link href="/sign-up">
-                  <Button>Get Started</Button>
-                </Link>
-              </>
-            )}
+          <div style={{ alignItems: 'center', gap: '0.75rem' }} className="desktop-nav">
+            <Link href="/sign-in" style={{ textDecoration: 'none' }}>
+              <button style={{
+                padding: '0.5rem 1.5rem',
+                border: 'none',
+                background: 'transparent',
+                color: royalColors.black,
+                borderRadius: '0.5rem',
+                cursor: 'pointer',
+                fontSize: '0.95rem',
+                fontWeight: '500',
+                transition: 'background 0.2s ease',
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = `${royalColors.gold}15`}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+              >
+                Sign In
+              </button>
+            </Link>
+            <Link href="/sign-up" style={{ textDecoration: 'none' }}>
+              <button style={{
+                padding: '0.5rem 1.5rem',
+                border: 'none',
+                background: royalColors.gold,
+                color: royalColors.white,
+                borderRadius: '0.5rem',
+                cursor: 'pointer',
+                fontSize: '0.95rem',
+                fontWeight: '500',
+                transition: 'all 0.2s ease',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 4px 12px rgba(184, 134, 11, 0.3)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
+              >
+                Get Started
+              </button>
+            </Link>
           </div>
 
-          {/* Mobile Menu Button */}
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-accent"
+            style={{
+              display: 'block',
+              padding: '0.5rem',
+              borderRadius: '0.5rem',
+              background: 'transparent',
+              border: 'none',
+              cursor: 'pointer',
+              color: royalColors.black,
+            }}
+            className="mobile-menu-btn"
           >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            className="md:hidden border-t border-border bg-background/95 backdrop-blur-lg"
+            style={{
+              borderTop: `1px solid ${royalColors.gold}20`,
+              background: royalColors.beige,
+            }}
+            className="mobile-menu"
           >
-            <div className="px-4 py-4 space-y-2">
+            <div style={{ padding: '1rem 1.5rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
               {navLinks.map((link) => (
-                link.dropdown ? (
-                  <div key={link.label} className="space-y-2">
-                    <div className="font-semibold px-3 py-2">{link.label}</div>
-                    {link.dropdown.map((item) => (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className="block px-6 py-2 rounded-lg hover:bg-accent transition-colors"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        {item.label}
-                      </Link>
-                    ))}
-                  </div>
-                ) : (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className="block px-3 py-2 rounded-lg hover:bg-accent transition-colors"
-                    onClick={() => setIsOpen(false)}
-                  >
-                    {link.label}
-                  </Link>
-                )
+                <a
+                  key={link.href}
+                  href={link.href}
+                  style={{
+                    padding: '0.75rem 1rem',
+                    borderRadius: '0.5rem',
+                    color: royalColors.black,
+                    textDecoration: 'none',
+                    transition: 'background 0.2s ease',
+                  }}
+                  onClick={() => setIsOpen(false)}
+                  onMouseEnter={(e) => e.currentTarget.style.background = `${royalColors.gold}15`}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
+                >
+                  {link.label}
+                </a>
               ))}
-              <div className="pt-4 border-t border-border space-y-2">
-                {session?.user ? (
-                  <>
-                    {userType === "provider" ? (
-                      <Link href="/provider/dashboard" onClick={() => setIsOpen(false)}>
-                        <Button className="w-full justify-start">
-                          Provider Dashboard
-                        </Button>
-                      </Link>
-                    ) : userType === "admin" ? (
-                      <Link href="/admin" onClick={() => setIsOpen(false)}>
-                        <Button className="w-full justify-start">
-                          Admin Panel
-                        </Button>
-                      </Link>
-                    ) : (
-                      <Link href="/dashboard" onClick={() => setIsOpen(false)}>
-                        <Button className="w-full justify-start">
-                          Dashboard
-                        </Button>
-                      </Link>
-                    )}
-                    <Button 
-                      variant="ghost" 
-                      className="w-full justify-start"
-                      onClick={() => {
-                        setIsOpen(false);
-                        handleSignOut();
-                      }}
-                    >
-                      <LogOut className="w-5 h-5 mr-2" />
-                      Sign Out
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Link href="/sign-in" onClick={() => setIsOpen(false)}>
-                      <Button variant="ghost" className="w-full justify-start">
-                        Sign In
-                      </Button>
-                    </Link>
-                    <Link href="/sign-up" onClick={() => setIsOpen(false)}>
-                      <Button className="w-full justify-start">
-                        Get Started
-                      </Button>
-                    </Link>
-                  </>
-                )}
+              <div style={{ 
+                paddingTop: '1rem', 
+                marginTop: '0.5rem',
+                borderTop: `1px solid ${royalColors.gold}20`,
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: '0.5rem' 
+              }}>
+                <Link href="/sign-in" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
+                  <button style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: 'none',
+                    background: 'transparent',
+                    color: royalColors.black,
+                    borderRadius: '0.5rem',
+                    cursor: 'pointer',
+                    fontSize: '0.95rem',
+                    fontWeight: '500',
+                    textAlign: 'left',
+                  }}>
+                    Sign In
+                  </button>
+                </Link>
+                <Link href="/sign-up" onClick={() => setIsOpen(false)} style={{ textDecoration: 'none' }}>
+                  <button style={{
+                    width: '100%',
+                    padding: '0.75rem',
+                    border: 'none',
+                    background: royalColors.gold,
+                    color: royalColors.white,
+                    borderRadius: '0.5rem',
+                    cursor: 'pointer',
+                    fontSize: '0.95rem',
+                    fontWeight: '500',
+                  }}>
+                    Get Started
+                  </button>
+                </Link>
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      <style jsx>{`
+        .desktop-nav {
+          display: none;
+        }
+        .mobile-menu-btn {
+          display: block;
+        }
+        @media (min-width: 768px) {
+          .desktop-nav {
+            display: flex;
+          }
+          .mobile-menu-btn {
+            display: none;
+          }
+          .mobile-menu {
+            display: none;
+          }
+        }
+      `}</style>
     </motion.nav>
   );
 }
