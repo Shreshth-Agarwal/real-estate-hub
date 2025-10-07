@@ -7,7 +7,7 @@ import { eq } from "drizzle-orm";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { email, password, name } = body;
+    const { email, password, name, userType } = body;
 
     // Validate input
     if (!email || !password || !name) {
@@ -16,6 +16,10 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Validate userType if provided
+    const validUserTypes = ['consumer', 'provider', 'admin'];
+    const finalUserType = userType && validUserTypes.includes(userType) ? userType : 'consumer';
 
     // Check if user already exists
     const [existingUser] = await db
@@ -39,6 +43,7 @@ export async function POST(request: NextRequest) {
       id: userId,
       email,
       name,
+      userType: finalUserType,
       createdAt: new Date(),
       updatedAt: new Date(),
     });

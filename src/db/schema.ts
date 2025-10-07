@@ -6,7 +6,7 @@ export const user = pgTable("user", {
   email: text("email").notNull().unique(),
   emailVerified: boolean("email_verified").default(false).notNull(),
   image: text("image"),
-  userType: varchar("user_type", { length: 50 }).default('individual'),
+  userType: varchar("user_type", { length: 50 }).default('consumer').notNull(),
   businessName: text("business_name"),
   businessType: varchar("business_type", { length: 100 }),
   phoneNumber: varchar("phone_number", { length: 20 }),

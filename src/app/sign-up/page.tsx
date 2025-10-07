@@ -9,6 +9,7 @@ export default function SignUpPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [userType, setUserType] = useState<"consumer" | "provider" | "">("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
@@ -18,6 +19,13 @@ export default function SignUpPage() {
     e.preventDefault();
     setError("");
     setIsLoading(true);
+
+    // Validate user type selection
+    if (!userType) {
+      setError("Please select your account type");
+      setIsLoading(false);
+      return;
+    }
 
     // Validate passwords match
     if (password !== confirmPassword) {
@@ -38,6 +46,7 @@ export default function SignUpPage() {
         email,
         name,
         password,
+        userType,
       });
 
       if (authError?.code) {
@@ -50,8 +59,9 @@ export default function SignUpPage() {
         return;
       }
 
-      // Redirect to dashboard on success
-      router.push("/dashboard");
+      // Redirect based on user type
+      const redirectPath = userType === "provider" ? "/provider/dashboard" : "/dashboard";
+      router.push(redirectPath);
       router.refresh();
     } catch (err) {
       console.error("Sign up error:", err);
@@ -67,13 +77,13 @@ export default function SignUpPage() {
       alignItems: "center",
       justifyContent: "center",
       padding: "3rem 1rem",
-      background: "linear-gradient(to bottom right, #F5F5DC, #000000)",
+      background: "linear-gradient(to bottom right, #F6F1E6, #0B0B0B)",
     }}>
       <div style={{
         width: "100%",
-        maxWidth: "420px",
+        maxWidth: "480px",
         padding: "2.5rem",
-        background: "#FFFEF0",
+        background: "#F6F1E6",
         border: "2px solid #D4AF37",
         borderRadius: "16px",
         boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.3)",
@@ -82,7 +92,7 @@ export default function SignUpPage() {
           <h1 style={{
             fontSize: "2rem",
             fontWeight: "bold",
-            color: "#000000",
+            color: "#0B0B0B",
             marginBottom: "0.5rem",
           }}>
             Create Account
@@ -105,13 +115,72 @@ export default function SignUpPage() {
           </div>
         )}
 
+        {/* Role Selection */}
+        <div style={{ marginBottom: "1.5rem" }}>
+          <label style={{
+            display: "block",
+            fontSize: "0.875rem",
+            fontWeight: "600",
+            color: "#0B0B0B",
+            marginBottom: "0.75rem",
+          }}>
+            Select Your Account Type
+          </label>
+          <div style={{ display: "flex", gap: "0.75rem" }}>
+            <button
+              type="button"
+              onClick={() => setUserType("consumer")}
+              disabled={isLoading}
+              style={{
+                flex: 1,
+                padding: "1rem",
+                border: userType === "consumer" ? "2px solid #D4AF37" : "2px solid #E5E5E5",
+                backgroundColor: userType === "consumer" ? "#D4AF37" : "#FFFFFF",
+                color: userType === "consumer" ? "#0B0B0B" : "#666666",
+                borderRadius: "8px",
+                cursor: isLoading ? "not-allowed" : "pointer",
+                transition: "all 0.2s",
+              }}
+            >
+              <div style={{ fontWeight: "600", marginBottom: "0.25rem" }}>
+                I'm a Consumer
+              </div>
+              <div style={{ fontSize: "0.75rem" }}>
+                Home Builder/Buyer
+              </div>
+            </button>
+            <button
+              type="button"
+              onClick={() => setUserType("provider")}
+              disabled={isLoading}
+              style={{
+                flex: 1,
+                padding: "1rem",
+                border: userType === "provider" ? "2px solid #D4AF37" : "2px solid #E5E5E5",
+                backgroundColor: userType === "provider" ? "#D4AF37" : "#FFFFFF",
+                color: userType === "provider" ? "#0B0B0B" : "#666666",
+                borderRadius: "8px",
+                cursor: isLoading ? "not-allowed" : "pointer",
+                transition: "all 0.2s",
+              }}
+            >
+              <div style={{ fontWeight: "600", marginBottom: "0.25rem" }}>
+                I'm a Provider
+              </div>
+              <div style={{ fontSize: "0.75rem" }}>
+                Business/Professional
+              </div>
+            </button>
+          </div>
+        </div>
+
         <form onSubmit={handleSubmit}>
           <div style={{ marginBottom: "1.25rem" }}>
             <label style={{
               display: "block",
               fontSize: "0.875rem",
               fontWeight: "600",
-              color: "#000000",
+              color: "#0B0B0B",
               marginBottom: "0.5rem",
             }}>
               Full Name
@@ -140,7 +209,7 @@ export default function SignUpPage() {
               display: "block",
               fontSize: "0.875rem",
               fontWeight: "600",
-              color: "#000000",
+              color: "#0B0B0B",
               marginBottom: "0.5rem",
             }}>
               Email
@@ -169,7 +238,7 @@ export default function SignUpPage() {
               display: "block",
               fontSize: "0.875rem",
               fontWeight: "600",
-              color: "#000000",
+              color: "#0B0B0B",
               marginBottom: "0.5rem",
             }}>
               Password
@@ -201,7 +270,7 @@ export default function SignUpPage() {
               display: "block",
               fontSize: "0.875rem",
               fontWeight: "600",
-              color: "#000000",
+              color: "#0B0B0B",
               marginBottom: "0.5rem",
             }}>
               Confirm Password
@@ -227,24 +296,24 @@ export default function SignUpPage() {
 
           <button
             type="submit"
-            disabled={isLoading}
+            disabled={isLoading || !userType}
             style={{
               width: "100%",
               padding: "0.75rem",
-              background: isLoading ? "#9B8B5B" : "#D4AF37",
-              color: "#000000",
+              background: (isLoading || !userType) ? "#9B8B5B" : "#D4AF37",
+              color: "#0B0B0B",
               border: "none",
               borderRadius: "8px",
               fontSize: "1rem",
               fontWeight: "600",
-              cursor: isLoading ? "not-allowed" : "pointer",
+              cursor: (isLoading || !userType) ? "not-allowed" : "pointer",
               transition: "background 0.2s",
             }}
             onMouseEnter={(e) => {
-              if (!isLoading) e.currentTarget.style.background = "#C19B2F";
+              if (!isLoading && userType) e.currentTarget.style.background = "#C19B2F";
             }}
             onMouseLeave={(e) => {
-              if (!isLoading) e.currentTarget.style.background = "#D4AF37";
+              if (!isLoading && userType) e.currentTarget.style.background = "#D4AF37";
             }}
           >
             {isLoading ? "Creating account..." : "Create Account"}

@@ -25,12 +25,12 @@ interface AuthResponse<T> {
 // Auth client for client-side authentication
 export const authClient = {
   signUp: {
-    email: async ({ email, password, name }: { email: string; password: string; name: string }): Promise<AuthResponse<{ user: User; session: { token: string } }>> => {
+    email: async ({ email, password, name, userType }: { email: string; password: string; name: string; userType?: string }): Promise<AuthResponse<{ user: User; session: { token: string } }>> => {
       try {
         const response = await fetch("/api/auth/signup", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password, name }),
+          body: JSON.stringify({ email, password, name, userType }),
         });
 
         const data = await response.json();
@@ -89,13 +89,13 @@ export const authClient = {
       const response = await fetch("/api/auth/me");
       
       if (!response.ok) {
-        return { data: null };
+        return { data: undefined };
       }
 
       const data = await response.json();
       return { data: data.data };
     } catch (error) {
-      return { data: null };
+      return { data: undefined };
     }
   },
 };

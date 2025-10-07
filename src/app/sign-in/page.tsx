@@ -29,9 +29,19 @@ export default function SignInPage() {
         return;
       }
 
-      // Redirect to dashboard on success
-      const next = searchParams.get("next") || "/dashboard";
-      router.push(next);
+      // Redirect based on user type
+      const userType = data?.user?.userType;
+      let redirectPath = "/dashboard";
+      
+      if (searchParams.get("next")) {
+        redirectPath = searchParams.get("next") || "/dashboard";
+      } else if (userType === "provider") {
+        redirectPath = "/provider/dashboard";
+      } else {
+        redirectPath = "/dashboard";
+      }
+      
+      router.push(redirectPath);
       router.refresh();
     } catch (err) {
       console.error("Sign in error:", err);
