@@ -22,6 +22,13 @@
       "when": 1759780315141,
       "tag": "0002_quick_wilson_fisk",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1759861971322,
+      "tag": "0003_noisy_kinsey_walden",
+      "breakpoints": true
     }
   ]
 }
