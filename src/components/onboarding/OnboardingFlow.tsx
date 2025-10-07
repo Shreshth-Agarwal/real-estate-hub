@@ -33,13 +33,15 @@ type StepProps = {
 export default function OnboardingFlow({
   userId,
   userName,
+  initialRole,
 }: {
   userId: string;
   userName: string;
+  initialRole?: "consumer" | "provider" | null;
 }) {
   const [currentStep, setCurrentStep] = useState(0);
   const [data, setData] = useState<OnboardingData>({
-    role: null,
+    role: initialRole || null,
     categories: [],
     profile: {},
   });

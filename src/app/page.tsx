@@ -10,6 +10,7 @@ import TrustSection from "@/components/landing/TrustSection";
 import PolicyInsights from "@/components/landing/PolicyInsights";
 import CommunityProjects from "@/components/landing/CommunityProjects";
 import Footer from "@/components/landing/Footer";
+import AIAssistant from "@/components/ai/AIAssistant";
 
 export default function Home() {
   return (
@@ -28,6 +29,7 @@ export default function Home() {
         <CommunityProjects />
       </main>
       <Footer />
+      <AIAssistant defaultMode="general" />
     </div>
   );
 }

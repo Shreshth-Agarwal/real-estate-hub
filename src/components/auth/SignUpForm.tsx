@@ -21,6 +21,7 @@ export default function SignUpForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const oauthError = searchParams?.get("error");
+  const roleParam = searchParams?.get("role"); // Get role from URL
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -94,7 +95,9 @@ export default function SignUpForm() {
       }
 
       console.log("🎯 [REDIRECT] Redirecting to onboarding");
-      router.push("/onboarding");
+      // Pass role to onboarding if specified
+      const onboardingUrl = roleParam ? `/onboarding?role=${roleParam}` : "/onboarding";
+      router.push(onboardingUrl);
       router.refresh();
     } catch (err) {
       console.error("❌ [SIGN-UP ERROR] Unexpected error:", {
@@ -116,9 +119,11 @@ export default function SignUpForm() {
     });
 
     try {
+      // Pass role to callback URL
+      const callbackURL = roleParam ? `/onboarding?role=${roleParam}` : "/onboarding";
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/onboarding",
+        callbackURL,
       });
       
       console.log("🔄 [GOOGLE OAUTH] Redirecting to Google consent screen");

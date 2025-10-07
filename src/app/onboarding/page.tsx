@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect } from "react";
 import OnboardingFlow from "@/components/onboarding/OnboardingFlow";
 import { Loader2 } from "lucide-react";
@@ -9,6 +9,8 @@ import { Loader2 } from "lucide-react";
 export default function OnboardingPage() {
   const { data: session, isPending } = useSession();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const roleParam = searchParams?.get("role") as "consumer" | "provider" | null;
 
   useEffect(() => {
     if (!isPending && !session?.user) {
@@ -30,7 +32,8 @@ export default function OnboardingPage() {
     <div className="min-h-screen flex items-center justify-center px-4 py-12 bg-gradient-to-br from-background via-muted/20 to-background">
       <OnboardingFlow 
         userId={session.user.id} 
-        userName={session.user.name || "User"} 
+        userName={session.user.name || "User"}
+        initialRole={roleParam}
       />
     </div>
   );

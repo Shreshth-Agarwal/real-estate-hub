@@ -33,7 +33,7 @@ export default function Hero() {
     if (session?.user) {
       router.push("/provider/dashboard");
     } else {
-      router.push("/sign-up");
+      router.push("/sign-up?role=provider");
     }
   };
 
