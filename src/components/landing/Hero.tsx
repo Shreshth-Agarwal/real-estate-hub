@@ -12,7 +12,7 @@ export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [userType, setUserType] = useState<string | null>(null);
   
-  const session = null;
+  const session: { user?: any } | null = null;
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"]
@@ -29,14 +29,12 @@ export default function Hero() {
     triggerOnce: false,
   });
 
-  const floatingVariants = {
-    animate: {
-      y: [0, -20, 0],
-      transition: {
-        duration: 3,
-        repeat: Infinity,
-        ease: "easeInOut"
-      }
+  const floatingAnimation = {
+    y: [0, -20, 0],
+    transition: {
+      duration: 3,
+      repeat: Infinity,
+      ease: "easeInOut"
     }
   };
 
@@ -240,8 +238,7 @@ export default function Hero() {
               {/* Main catalog card */}
               <motion.div
                 style={{ y: y1 }}
-                variants={floatingVariants}
-                animate="animate"
+                animate={floatingAnimation}
                 className="absolute top-0 right-0 w-80 bg-gradient-to-br from-card to-card/50 backdrop-blur-xl border border-border/50 rounded-3xl shadow-2xl p-6 space-y-4 hover:shadow-primary/20 transition-all duration-500"
                 whileHover={{ scale: 1.05, rotateZ: 2 }}
               >
