@@ -1,64 +1,24 @@
-"use client";
-
-import { useSession } from "@/lib/auth-client";
-import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { requireAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
-import { motion } from "framer-motion";
-import { 
-  Loader2, 
-  Search, 
-  MessageSquare, 
-  FolderKanban, 
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import Link from "next/link";
+import {
+  Search,
+  MessageSquare,
+  FolderKanban,
   TrendingUp,
-  Package,
-  ArrowRight,
   Bookmark,
-  FileText,
   Bot,
   Plus,
-  Eye,
-  Clock,
-  CheckCircle2
+  ArrowRight,
 } from "lucide-react";
-import Link from "next/link";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+import LogoutButton from "./LogoutButton";
 
-export default function DashboardPage() {
-  const { data: session, isPending } = useSession();
-  const router = useRouter();
-  const [showTooltip, setShowTooltip] = useState(false);
-
-  useEffect(() => {
-    if (!isPending && !session?.user) {
-      router.push("/sign-in");
-    } else if (session?.user) {
-      // Show tooltip for first-time users
-      const hasSeenTooltip = localStorage.getItem("dashboard_tooltip_seen");
-      if (!hasSeenTooltip) {
-        setShowTooltip(true);
-        setTimeout(() => {
-          localStorage.setItem("dashboard_tooltip_seen", "true");
-          setShowTooltip(false);
-        }, 5000);
-      }
-    }
-  }, [session, isPending, router]);
-
-  if (isPending) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  if (!session?.user) return null;
+export default async function DashboardPage() {
+  const user = await requireAuth();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-muted/20 to-background">
-      {/* Header */}
       <div className="border-b border-border bg-background/80 backdrop-blur-lg sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
@@ -80,49 +40,36 @@ export default function DashboardPage() {
               <Button variant="ghost" size="sm" asChild>
                 <Link href="/knowledge/blogs">Knowledge</Link>
               </Button>
-              <Button variant="outline" size="sm" asChild>
-                <Link href="/sign-in">Profile</Link>
-              </Button>
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">
+                  {user.name || user.email}
+                </span>
+                <LogoutButton />
+              </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="space-y-8"
-        >
-          {/* Welcome Section */}
+        <div className="space-y-8">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-3xl font-bold mb-2">
-                Welcome back, {session.user.name}! 👋
+                Welcome back, {user.name}! 👋
               </h2>
               <p className="text-muted-foreground">
                 Manage your projects, requests, and saved items
               </p>
             </div>
-            <Button size="lg" className="relative" asChild>
+            <Button size="lg" asChild>
               <Link href="/catalogs">
                 <Search className="w-5 h-5 mr-2" />
                 Browse Catalogs
-                {showTooltip && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="absolute -bottom-16 right-0 bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm shadow-lg whitespace-nowrap"
-                  >
-                    👆 Click here to start exploring!
-                  </motion.div>
-                )}
               </Link>
             </Button>
           </div>
 
-          {/* Quick Stats */}
           <div className="grid md:grid-cols-4 gap-4">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between pb-2">
@@ -169,9 +116,7 @@ export default function DashboardPage() {
             </Card>
           </div>
 
-          {/* Main Dashboard Modules */}
           <div className="grid lg:grid-cols-3 gap-6">
-            {/* My Requests */}
             <Card className="lg:col-span-2">
               <CardHeader>
                 <div className="flex items-center justify-between">
@@ -203,7 +148,6 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
 
-            {/* AI Assistant Widget */}
             <Card className="bg-gradient-to-br from-primary/10 to-purple-500/10 border-primary/20">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -232,7 +176,6 @@ export default function DashboardPage() {
             </Card>
           </div>
 
-          {/* Saved Catalogs & Projects */}
           <div className="grid lg:grid-cols-2 gap-6">
             <Card>
               <CardHeader>
@@ -279,7 +222,6 @@ export default function DashboardPage() {
             </Card>
           </div>
 
-          {/* Getting Started Guide */}
           <Card className="border-primary/20">
             <CardHeader>
               <CardTitle>Getting Started with Hub4Estate</CardTitle>
@@ -322,7 +264,7 @@ export default function DashboardPage() {
               </div>
             </CardContent>
           </Card>
-        </motion.div>
+        </div>
       </div>
     </div>
   );
