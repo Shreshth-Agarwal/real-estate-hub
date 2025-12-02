@@ -1,0 +1,135 @@
+import { db } from '@/db';
+import { user } from '@/db/schema';
+
+async function main() {
+    const sampleUsers = [
+        {
+            id: 'user_rajesh_01',
+            email: 'rajesh.kumar@gmail.com',
+            name: 'Rajesh Kumar',
+            emailVerified: true,
+            userType: 'consumer',
+            locale: 'en',
+            avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Rajesh',
+            image: null,
+            createdAt: new Date('2024-01-10'),
+            updatedAt: new Date('2024-01-10'),
+        },
+        {
+            id: 'user_priya_01',
+            email: 'priya.sharma@gmail.com',
+            name: 'Priya Sharma',
+            emailVerified: true,
+            userType: 'consumer',
+            locale: 'en',
+            avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Priya',
+            image: null,
+            createdAt: new Date('2024-01-11'),
+            updatedAt: new Date('2024-01-11'),
+        },
+        {
+            id: 'user_amit_01',
+            email: 'amit.patel@gmail.com',
+            name: 'Amit Patel',
+            emailVerified: true,
+            userType: 'consumer',
+            locale: 'en',
+            avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Amit',
+            image: null,
+            createdAt: new Date('2024-01-12'),
+            updatedAt: new Date('2024-01-12'),
+        },
+        {
+            id: 'user_sneha_01',
+            email: 'sneha.gupta@gmail.com',
+            name: 'Sneha Gupta',
+            emailVerified: true,
+            userType: 'consumer',
+            locale: 'en',
+            avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sneha',
+            image: null,
+            createdAt: new Date('2024-01-13'),
+            updatedAt: new Date('2024-01-13'),
+        },
+        {
+            id: 'user_vikram_01',
+            email: 'vikram.singh@gmail.com',
+            name: 'Vikram Singh',
+            emailVerified: true,
+            userType: 'consumer',
+            locale: 'en',
+            avatarUrl: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Vikram',
+            image: null,
+            createdAt: new Date('2024-01-14'),
+            updatedAt: new Date('2024-01-14'),
+        },
+        {
+            id: 'user_suresh_01',
+            email: 'suresh@buildersupply.com',
+            name: 'Suresh Builders',
+            emailVerified: true,
+            userType: 'provider',
+            locale: 'en',
+            avatarUrl: 'https://api.dicebear.com/7.x/identicon/svg?seed=Suresh',
+            image: null,
+            createdAt: new Date('2024-01-05'),
+            updatedAt: new Date('2024-01-05'),
+        },
+        {
+            id: 'user_ramesh_01',
+            email: 'ramesh@tilesmart.com',
+            name: 'Ramesh Tiles',
+            emailVerified: true,
+            userType: 'provider',
+            locale: 'en',
+            avatarUrl: 'https://api.dicebear.com/7.x/identicon/svg?seed=Ramesh',
+            image: null,
+            createdAt: new Date('2024-01-06'),
+            updatedAt: new Date('2024-01-06'),
+        },
+        {
+            id: 'user_kiran_01',
+            email: 'kiran@materials.com',
+            name: 'Kiran Materials',
+            emailVerified: true,
+            userType: 'provider',
+            locale: 'en',
+            avatarUrl: 'https://api.dicebear.com/7.x/identicon/svg?seed=Kiran',
+            image: null,
+            createdAt: new Date('2024-01-07'),
+            updatedAt: new Date('2024-01-07'),
+        },
+        {
+            id: 'user_deepak_01',
+            email: 'deepak@interiors.com',
+            name: 'Deepak Interiors',
+            emailVerified: true,
+            userType: 'provider',
+            locale: 'en',
+            avatarUrl: 'https://api.dicebear.com/7.x/identicon/svg?seed=Deepak',
+            image: null,
+            createdAt: new Date('2024-01-08'),
+            updatedAt: new Date('2024-01-08'),
+        },
+        {
+            id: 'user_admin_hub4estate',
+            email: 'admin@hub4estate.com',
+            name: 'Admin User',
+            emailVerified: true,
+            userType: 'admin',
+            locale: 'en',
+            avatarUrl: 'https://api.dicebear.com/7.x/bottts/svg?seed=Admin',
+            image: null,
+            createdAt: new Date('2024-01-01'),
+            updatedAt: new Date('2024-01-01'),
+        }
+    ];
+
+    await db.insert(user).values(sampleUsers);
+    
+    console.log('✅ Users seeder completed successfully');
+}
+
+main().catch((error) => {
+    console.error('❌ Seeder failed:', error);
+});
