@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const token = request.headers.get("authorization")?.replace("Bearer ", "");
@@ -13,7 +13,13 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const quoteId = parseInt(params.id);
+    const { id } = await params;
+    const quoteId = parseInt(id);
+
+    if (isNaN(quoteId)) {
+      return NextResponse.json({ error: "Invalid quote ID" }, { status: 400 });
+    }
+
     const now = new Date().toISOString();
 
     // Update quote status

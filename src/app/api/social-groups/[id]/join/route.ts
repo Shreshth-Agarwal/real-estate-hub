@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/db';
-import { socialGroups, socialGroupMembers, users } from '@/db/schema';
+import { socialGroups, socialGroupMembers, user } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { getCurrentUser } from '@/lib/auth';
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // Authentication check
@@ -19,7 +19,8 @@ export async function POST(
     }
 
     // Validate group ID
-    const groupId = params.id;
+    const { id } = await params;
+    const groupId = id;
     if (!groupId || isNaN(parseInt(groupId))) {
       return NextResponse.json(
         { error: 'Valid group ID is required', code: 'INVALID_ID' },
@@ -50,7 +51,7 @@ export async function POST(
       .where(
         and(
           eq(socialGroupMembers.groupId, parsedGroupId),
-          eq(socialGroupMembers.userId, parseInt(currentUser.id))
+          eq(socialGroupMembers.userId, currentUser.id)
         )
       )
       .limit(1);
@@ -67,7 +68,7 @@ export async function POST(
       .insert(socialGroupMembers)
       .values({
         groupId: parsedGroupId,
-        userId: parseInt(currentUser.id),
+        userId: currentUser.id,
         role: 'member',
         joinedAt: new Date().toISOString(),
       })
@@ -85,13 +86,13 @@ export async function POST(
     // Fetch user details for response
     const userDetails = await db
       .select({
-        id: users.id,
-        name: users.name,
-        email: users.email,
-        avatarUrl: users.avatarUrl,
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        avatarUrl: user.avatarUrl,
       })
-      .from(users)
-      .where(eq(users.id, parseInt(currentUser.id)))
+      .from(user)
+      .where(eq(user.id, currentUser.id))
       .limit(1);
 
     // Return membership details with user and group info

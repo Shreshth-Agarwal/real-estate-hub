@@ -5,7 +5,7 @@ import { eq } from "drizzle-orm";
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const token = request.headers.get("authorization")?.replace("Bearer ", "");
@@ -13,7 +13,12 @@ export async function DELETE(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const notificationId = parseInt(params.id);
+    const { id } = await params;
+    const notificationId = parseInt(id);
+
+    if (isNaN(notificationId)) {
+      return NextResponse.json({ error: "Invalid notification ID" }, { status: 400 });
+    }
 
     await db
       .delete(notifications)

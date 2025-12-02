@@ -5,10 +5,15 @@ import { eq } from "drizzle-orm";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const rfqId = parseInt(params.id);
+    const { id } = await params;
+    const rfqId = parseInt(id);
+
+    if (isNaN(rfqId)) {
+      return NextResponse.json({ error: "Invalid RFQ ID" }, { status: 400 });
+    }
 
     const [rfqRequest] = await db
       .select()

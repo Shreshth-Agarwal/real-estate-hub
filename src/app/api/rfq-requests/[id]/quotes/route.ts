@@ -5,10 +5,15 @@ import { eq } from "drizzle-orm";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const rfqId = parseInt(params.id);
+    const { id } = await params;
+    const rfqId = parseInt(id);
+
+    if (isNaN(rfqId)) {
+      return NextResponse.json({ error: "Invalid RFQ ID" }, { status: 400 });
+    }
 
     const allQuotes = await db
       .select()
@@ -27,7 +32,7 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const token = request.headers.get("authorization")?.replace("Bearer ", "");
@@ -35,7 +40,13 @@ export async function POST(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const rfqId = parseInt(params.id);
+    const { id } = await params;
+    const rfqId = parseInt(id);
+
+    if (isNaN(rfqId)) {
+      return NextResponse.json({ error: "Invalid RFQ ID" }, { status: 400 });
+    }
+
     const body = await request.json();
     const { price, currency, deliveryEtaDays, notes } = body;
 
@@ -47,7 +58,7 @@ export async function POST(
     }
 
     // In a real app, get providerId from authenticated session
-    const providerId = 1; // Placeholder
+    const providerId = "placeholder-provider-id";
 
     const now = new Date().toISOString();
     const [quote] = await db
