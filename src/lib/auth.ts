@@ -19,6 +19,11 @@ export const auth = betterAuth({
 			enabled: !!(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET),
 		}
 	},
+	trustedOrigins: [
+		"http://localhost:3000",
+		"https://3000-cc6f95df-43e5-4fde-a32c-e83d3acf5057.proxy.daytona.works",
+		...(process.env.TRUSTED_ORIGINS ? process.env.TRUSTED_ORIGINS.split(",") : [])
+	],
 	plugins: [bearer()]
 });
 
