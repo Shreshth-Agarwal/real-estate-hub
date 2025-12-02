@@ -40,26 +40,56 @@ export default function SignUpForm() {
     setLoading(true);
 
     try {
-      const { data, error } = await authClient.signUp.email({
+      const response = await authClient.signUp.email({
         email: formData.email,
         password: formData.password,
         name: formData.name,
       });
 
-      if (error?.code) {
-        const errorMap: Record<string, string> = {
-          USER_ALREADY_EXISTS: "This email is already registered. Please sign in instead or use a different email.",
-          INVALID_EMAIL: "Please enter a valid email address",
-          WEAK_PASSWORD: "Password is too weak. Use a stronger password.",
-        };
-        toast.error(errorMap[error.code] || "Registration failed. Please try again.");
+      // Log for debugging
+      console.log("Sign-up response:", response);
+
+      // Check if there's an error in the response
+      if (response.error) {
+        const error = response.error;
+        console.error("Sign-up error:", error);
+
+        // Check for existing user (422 status or specific error codes/messages)
+        const errorMessage = error.message || "";
+        const errorCode = error.code || "";
+        
+        if (
+          errorCode === "USER_ALREADY_EXISTS" ||
+          errorMessage.toLowerCase().includes("already") ||
+          errorMessage.toLowerCase().includes("exists") ||
+          error.status === 422
+        ) {
+          toast.error("This email is already registered. Please sign in instead or use a different email.");
+          setLoading(false);
+          return;
+        }
+        
+        if (errorCode === "INVALID_EMAIL") {
+          toast.error("Please enter a valid email address");
+          setLoading(false);
+          return;
+        }
+        
+        if (errorCode === "WEAK_PASSWORD") {
+          toast.error("Password is too weak. Use a stronger password.");
+          setLoading(false);
+          return;
+        }
+
+        // Show the actual error message if available
+        toast.error(errorMessage || "Registration failed. Please try again.");
         setLoading(false);
         return;
       }
 
+      // Success - redirect to onboarding
       toast.success("Account created successfully! 🎉");
       
-      // Redirect to onboarding with role if specified
       const role = searchParams.get("role");
       if (role === "provider") {
         router.push("/onboarding?role=provider");
@@ -68,9 +98,18 @@ export default function SignUpForm() {
       } else {
         router.push("/onboarding");
       }
-    } catch (error) {
-      console.error("Sign up error:", error);
-      toast.error("An unexpected error occurred. Please try again.");
+    } catch (error: any) {
+      console.error("Sign up exception:", error);
+      
+      // Try to extract error message from exception
+      const errorMessage = error?.message || error?.error?.message || "";
+      
+      if (errorMessage.toLowerCase().includes("already") || errorMessage.toLowerCase().includes("exists")) {
+        toast.error("This email is already registered. Please sign in instead or use a different email.");
+      } else {
+        toast.error("An unexpected error occurred. Please try again.");
+      }
+      
       setLoading(false);
     }
   };
