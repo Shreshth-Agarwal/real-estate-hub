@@ -6,240 +6,187 @@ import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2, Mail, AlertCircle } from "lucide-react";
-import { motion } from "framer-motion";
+import { Card } from "@/components/ui/card";
+import Link from "next/link";
 import { toast } from "sonner";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { FcGoogle } from "react-icons/fc";
+import { Loader2 } from "lucide-react";
 
 export default function SignUpForm() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const oauthError = searchParams?.get("error");
-  const roleParam = searchParams?.get("role"); // Get role from URL
+  const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsLoading(true);
 
-    console.log("📝 [SIGN-UP] Email sign-up initiated:", {
-      email,
-      name,
-      timestamp: new Date().toISOString(),
-    });
-
-    // Validate passwords match
-    if (password !== confirmPassword) {
+    if (formData.password !== formData.confirmPassword) {
       toast.error("Passwords do not match");
-      setIsLoading(false);
       return;
     }
 
-    // Validate password strength
-    if (password.length < 8) {
+    if (formData.password.length < 8) {
       toast.error("Password must be at least 8 characters");
-      setIsLoading(false);
       return;
     }
+
+    setLoading(true);
 
     try {
       const { data, error } = await authClient.signUp.email({
-        email,
-        name,
-        password,
+        email: formData.email,
+        password: formData.password,
+        name: formData.name,
       });
 
       if (error?.code) {
-        console.error("❌ [SIGN-UP ERROR]:", {
-          errorCode: error.code,
-          message: error.message,
-          timestamp: new Date().toISOString(),
-        });
-
-        if (error.code === "USER_ALREADY_EXISTS") {
-          toast.error("This email is already registered");
-        } else {
-          toast.error("Registration failed. Please try again.");
-        }
-        setIsLoading(false);
+        const errorMap: Record<string, string> = {
+          USER_ALREADY_EXISTS: "This email is already registered. Please sign in instead or use a different email.",
+          INVALID_EMAIL: "Please enter a valid email address",
+          WEAK_PASSWORD: "Password is too weak. Use a stronger password.",
+        };
+        toast.error(errorMap[error.code] || "Registration failed. Please try again.");
+        setLoading(false);
         return;
       }
 
-      console.log("✅ [SIGN-UP SUCCESS] Account created:", {
-        userId: data?.user?.id,
-        email: data?.user?.email,
-        timestamp: new Date().toISOString(),
-      });
-
-      toast.success("Account created successfully!");
-
-      // Auto sign in after registration
-      const { error: signInError } = await authClient.signIn.email({
-        email,
-        password,
-      });
-
-      if (signInError) {
-        console.error("❌ [AUTO SIGN-IN ERROR]:", {
-          error: signInError,
-          timestamp: new Date().toISOString(),
-        });
-        toast.info("Please sign in with your new account");
-        router.push("/sign-in");
-        return;
+      toast.success("Account created successfully! 🎉");
+      
+      // Redirect to onboarding with role if specified
+      const role = searchParams.get("role");
+      if (role === "provider") {
+        router.push("/onboarding?role=provider");
+      } else if (role === "consumer") {
+        router.push("/onboarding?role=consumer");
+      } else {
+        router.push("/onboarding");
       }
-
-      console.log("🎯 [REDIRECT] Redirecting to onboarding");
-      // Pass role to onboarding if specified
-      const onboardingUrl = roleParam ? `/onboarding?role=${roleParam}` : "/onboarding";
-      router.push(onboardingUrl);
-      router.refresh();
-    } catch (err) {
-      console.error("❌ [SIGN-UP ERROR] Unexpected error:", {
-        error: err instanceof Error ? err.message : String(err),
-        stack: err instanceof Error ? err.stack : undefined,
-        timestamp: new Date().toISOString(),
-      });
-      toast.error("An error occurred. Please try again.");
-      setIsLoading(false);
+    } catch (error) {
+      console.error("Sign up error:", error);
+      toast.error("An unexpected error occurred. Please try again.");
+      setLoading(false);
     }
   };
 
   const handleGoogleSignUp = async () => {
-    setIsGoogleLoading(true);
-    
-    console.log("🔐 [GOOGLE OAUTH] Initiating Google sign-up:", {
-      timestamp: new Date().toISOString(),
-      redirectURL: "/onboarding",
-    });
-
+    setGoogleLoading(true);
     try {
-      // Pass role to callback URL
-      const callbackURL = roleParam ? `/onboarding?role=${roleParam}` : "/onboarding";
-      await authClient.signIn.social({
+      const role = searchParams.get("role");
+      const callbackURL = role 
+        ? `/onboarding?role=${role}`
+        : "/onboarding";
+
+      const { data, error } = await authClient.signIn.social({
         provider: "google",
         callbackURL,
       });
-      
-      console.log("🔄 [GOOGLE OAUTH] Redirecting to Google consent screen");
-    } catch (err) {
-      console.error("❌ [GOOGLE OAUTH ERROR]:", {
-        error: err instanceof Error ? err.message : String(err),
-        stack: err instanceof Error ? err.stack : undefined,
-        timestamp: new Date().toISOString(),
-      });
-      toast.error("Google sign-up failed. Please try again.");
-      setIsGoogleLoading(false);
+
+      if (error?.code) {
+        toast.error("Google sign-up is not available. Please use email/password.");
+        setGoogleLoading(false);
+      }
+    } catch (error) {
+      console.error("Google sign-up error:", error);
+      toast.error("Google sign-up is not available. Please use email/password.");
+      setGoogleLoading(false);
     }
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4 }}
-      className="w-full max-w-md space-y-6 bg-card border border-border rounded-2xl p-8 shadow-xl"
-    >
-      <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Create an account</h1>
+    <Card className="w-full max-w-md p-8">
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold mb-2">Create your account</h2>
         <p className="text-muted-foreground">
-          Join Hub4Estate and transform your real-estate journey
+          Join Hub4Estate and start your journey
         </p>
       </div>
 
-      {oauthError && (
-        <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
-          <AlertDescription>
-            {oauthError === "no_code" && "OAuth authorization failed. Please try again."}
-            {oauthError === "session_failed" && "Failed to create session. Please try again."}
-            {oauthError === "oauth_failed" && "OAuth authentication failed. Please try again."}
-            {!["no_code", "session_failed", "oauth_failed"].includes(oauthError) && oauthError}
-          </AlertDescription>
-        </Alert>
-      )}
-
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="space-y-2">
+        <div>
           <Label htmlFor="name">Full Name</Label>
           <Input
             id="name"
             type="text"
             placeholder="John Doe"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             required
-            disabled={isLoading}
+            disabled={loading}
           />
         </div>
 
-        <div className="space-y-2">
+        <div>
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
             type="email"
             placeholder="you@example.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
             required
-            disabled={isLoading}
+            disabled={loading}
           />
         </div>
 
-        <div className="space-y-2">
+        <div>
           <Label htmlFor="password">Password</Label>
           <Input
             id="password"
             type="password"
             placeholder="••••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            value={formData.password}
+            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             required
-            disabled={isLoading}
+            disabled={loading}
             autoComplete="off"
+            minLength={8}
           />
-          <p className="text-xs text-muted-foreground">
-            Must be at least 8 characters
+          <p className="text-xs text-muted-foreground mt-1">
+            Minimum 8 characters
           </p>
         </div>
 
-        <div className="space-y-2">
+        <div>
           <Label htmlFor="confirmPassword">Confirm Password</Label>
           <Input
             id="confirmPassword"
             type="password"
             placeholder="••••••••"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            value={formData.confirmPassword}
+            onChange={(e) =>
+              setFormData({ ...formData, confirmPassword: e.target.value })
+            }
             required
-            disabled={isLoading}
+            disabled={loading}
             autoComplete="off"
           />
         </div>
 
-        <Button type="submit" className="w-full" disabled={isLoading || isGoogleLoading}>
-          {isLoading ? (
+        <Button type="submit" className="w-full" disabled={loading}>
+          {loading ? (
             <>
               <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               Creating account...
             </>
           ) : (
-            "Create account"
+            "Create Account"
           )}
         </Button>
       </form>
 
-      <div className="relative">
+      <div className="relative my-6">
         <div className="absolute inset-0 flex items-center">
           <span className="w-full border-t" />
         </div>
         <div className="relative flex justify-center text-xs uppercase">
-          <span className="bg-card px-2 text-muted-foreground">
+          <span className="bg-background px-2 text-muted-foreground">
             Or continue with
           </span>
         </div>
@@ -249,34 +196,31 @@ export default function SignUpForm() {
         type="button"
         variant="outline"
         className="w-full"
-        disabled={isLoading || isGoogleLoading}
         onClick={handleGoogleSignUp}
+        disabled={loading || googleLoading}
       >
-        {isGoogleLoading ? (
+        {googleLoading ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Connecting to Google...
+            Connecting...
           </>
         ) : (
           <>
-            <Mail className="mr-2 h-4 w-4" />
-            Google
+            <FcGoogle className="mr-2 h-5 w-5" />
+            Sign up with Google
           </>
         )}
       </Button>
 
-      <p className="text-center text-sm text-muted-foreground">
+      <p className="text-center text-sm text-muted-foreground mt-6">
         Already have an account?{" "}
-        <Button
-          type="button"
-          variant="link"
-          className="px-0"
-          onClick={() => router.push("/sign-in")}
-          disabled={isLoading || isGoogleLoading}
+        <Link
+          href="/sign-in"
+          className="font-medium text-primary hover:underline"
         >
           Sign in
-        </Button>
+        </Link>
       </p>
-    </motion.div>
+    </Card>
   );
 }

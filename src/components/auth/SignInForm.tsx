@@ -16,6 +16,7 @@ export default function SignInForm() {
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -31,7 +32,11 @@ export default function SignInForm() {
       });
 
       if (error?.code) {
-        toast.error("Invalid email or password. Please try again.");
+        if (error.code === "INVALID_PASSWORD" || error.code === "USER_NOT_FOUND") {
+          toast.error("Invalid email or password. Please make sure you have already registered an account and try again.");
+        } else {
+          toast.error("Sign in failed. Please try again.");
+        }
         setIsLoading(false);
         return;
       }
@@ -50,13 +55,21 @@ export default function SignInForm() {
   };
 
   const handleGoogleSignIn = async () => {
+    setGoogleLoading(true);
     try {
-      await authClient.signIn.social({
+      const { data, error } = await authClient.signIn.social({
         provider: "google",
         callbackURL: searchParams.get("next") || "/dashboard",
       });
+
+      if (error?.code) {
+        toast.error("Google sign-in is not available. Please use email/password.");
+        setGoogleLoading(false);
+      }
     } catch (err) {
-      toast.error("Google sign-in is not configured yet");
+      console.error("Google sign-in error:", err);
+      toast.error("Google sign-in is not available. Please use email/password.");
+      setGoogleLoading(false);
     }
   };
 
@@ -144,24 +157,38 @@ export default function SignInForm() {
         type="button"
         variant="outline"
         className="w-full"
-        disabled={isLoading}
+        disabled={isLoading || googleLoading}
         onClick={handleGoogleSignIn}
       >
-        <Mail className="mr-2 h-4 w-4" />
-        Google
+        {googleLoading ? (
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            Connecting...
+          </>
+        ) : (
+          <>
+            <Mail className="mr-2 h-4 w-4" />
+            Google
+          </>
+        )}
       </Button>
 
-      <p className="text-center text-sm text-muted-foreground">
-        Don't have an account?{" "}
-        <Button
-          type="button"
-          variant="link"
-          className="px-0"
-          onClick={() => router.push("/sign-up")}
-        >
-          Sign up
-        </Button>
-      </p>
+      <div className="text-center space-y-2">
+        <p className="text-sm text-muted-foreground">
+          Don't have an account?{" "}
+          <Button
+            type="button"
+            variant="link"
+            className="px-0"
+            onClick={() => router.push("/sign-up")}
+          >
+            Sign up here
+          </Button>
+        </p>
+        <p className="text-xs text-amber-600 bg-amber-50 dark:bg-amber-950/20 p-2 rounded">
+          ⚠️ Please make sure you have registered an account first before signing in
+        </p>
+      </div>
     </motion.div>
   );
 }
